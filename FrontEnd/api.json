@@ -1,0 +1,23 @@
+{
+  "auth": {
+    "checkUsername": "/api/auth/check-username",
+    "register": "/api/auth/register",
+    "verifyOtp": "/api/auth/verify-otp",
+    "login": "/api/auth/login",
+    "refreshToken": "/api/auth/refresh-token",
+    "logout": "/api/auth/logout",
+    "forgotPassword": "/api/auth/forgot-password",
+    "resetPassword": "/api/auth/reset-password",
+    "requestOtp": "/api/auth/request-otp",
+    "me": "/api/auth/me"
+  },
+  "profile": {
+    "getProfile": "/api/users/{user_id}",
+    "updateProfile": "/api/users/{user_id}",
+    "uploadAvatar": "/api/users/{user_id}/avatar",
+    "getUserPosts": "/api/users/{user_id}/posts",
+    "getUserReels": "/api/users/{user_id}/reels",
+    "getSavedPosts": "/api/users/{user_id}/saved",
+    "getUserStats": "/api/users/{user_id}/stats"
+  }
+}

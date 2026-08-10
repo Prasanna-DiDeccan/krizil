@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "krizil",
+    "slug": "krizil",
+    "version": "1.0.0",
+    "scheme": "krizil",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+
+    "android": {
+      "package": "com.krizil.app",
+      "googleServicesFile": "./google-services.json",
+      "jsEngine": "hermes",
+
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0A0A0F"
+      }
+    },
+
+    "ios": {
+      "bundleIdentifier": "com.krizil.app",
+      "supportsTablet": true
+    },
+
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "expo-video",
+      "@react-native-community/datetimepicker",
+
+      [
+        "expo-media-library",
+        {
+          "granularPermissions": [
+            "photo"
+          ]
+        }
+      ]
+    ]
+  }
+}
