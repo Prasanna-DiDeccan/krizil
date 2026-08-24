@@ -1,101 +1,206 @@
-import React, { useState } from "react";
+import React, {
+  useState,
+} from "react";
+
 import {
   View,
+  Text,
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+import AllContentGrid from "./AllContentGrid";
+import ReelsGrid from "./ReelsGrid";
 
 export default function ProfileTabs() {
-  const [activeTab, setActiveTab] = useState("posts");
+  const [
+    activeTab,
+    setActiveTab,
+  ] = useState("all");
 
   return (
-    <View style={styles.container}>
-      {/* Posts */}
+    <View style={styles.wrapper}>
 
-      <TouchableOpacity
-        style={[
-          styles.tab,
-          activeTab === "posts" &&
-            styles.activeTab,
-        ]}
-        onPress={() => setActiveTab("posts")}
-      >
-        <Ionicons
-          name="grid-outline"
-          size={24}
-          color={
-            activeTab === "posts"
-              ? "#A855F7"
-              : "#7E7E89"
+      {/* ==================================================
+          TABS
+      ================================================== */}
+
+      <View style={styles.container}>
+
+        {/* ==================================================
+            ALL
+        ================================================== */}
+
+        <TouchableOpacity
+          style={[
+            styles.tab,
+            activeTab === "all" &&
+              styles.activeTab,
+          ]}
+          onPress={() =>
+            setActiveTab("all")
           }
-        />
-      </TouchableOpacity>
+          activeOpacity={0.8}
+        >
+          <Ionicons
+            name="grid-outline"
+            size={24}
+            color={
+              activeTab === "all"
+                ? "#A855F7"
+                : "#7E7E89"
+            }
+          />
+        </TouchableOpacity>
 
-      {/* Reels */}
+        {/* ==================================================
+            REELS
+        ================================================== */}
 
-      <TouchableOpacity
-        style={[
-          styles.tab,
-          activeTab === "reels" &&
-            styles.activeTab,
-        ]}
-        onPress={() => setActiveTab("reels")}
-      >
-        <Ionicons
-          name="play-circle-outline"
-          size={25}
-          color={
-            activeTab === "reels"
-              ? "#A855F7"
-              : "#7E7E89"
+        <TouchableOpacity
+          style={[
+            styles.tab,
+            activeTab === "reels" &&
+              styles.activeTab,
+          ]}
+          onPress={() =>
+            setActiveTab("reels")
           }
-        />
-      </TouchableOpacity>
+          activeOpacity={0.8}
+        >
+          <Ionicons
+            name="play-circle-outline"
+            size={25}
+            color={
+              activeTab === "reels"
+                ? "#A855F7"
+                : "#7E7E89"
+            }
+          />
+        </TouchableOpacity>
 
-      {/* Tagged */}
+        {/* ==================================================
+            TAGGED
+        ================================================== */}
 
-      <TouchableOpacity
-        style={[
-          styles.tab,
-          activeTab === "tagged" &&
-            styles.activeTab,
-        ]}
-        onPress={() => setActiveTab("tagged")}
-      >
-        <Ionicons
-          name="person-outline"
-          size={24}
-          color={
-            activeTab === "tagged"
-              ? "#A855F7"
-              : "#7E7E89"
+        <TouchableOpacity
+          style={[
+            styles.tab,
+            activeTab === "tagged" &&
+              styles.activeTab,
+          ]}
+          onPress={() =>
+            setActiveTab("tagged")
           }
-        />
-      </TouchableOpacity>
+          activeOpacity={0.8}
+        >
+          <Ionicons
+            name="person-outline"
+            size={24}
+            color={
+              activeTab === "tagged"
+                ? "#A855F7"
+                : "#7E7E89"
+            }
+          />
+        </TouchableOpacity>
+
+      </View>
+
+      {/* ==================================================
+          ALL = POSTS + REELS
+      ================================================== */}
+
+      {activeTab === "all" && (
+        <AllContentGrid />
+      )}
+
+      {/* ==================================================
+          REELS ONLY
+      ================================================== */}
+
+      {activeTab === "reels" && (
+        <ReelsGrid />
+      )}
+
+      {/* ==================================================
+          TAGGED
+      ================================================== */}
+
+      {activeTab === "tagged" && (
+        <View style={styles.empty}>
+
+          <Ionicons
+            name="person-outline"
+            size={42}
+            color="#555"
+          />
+
+          <Text
+            style={styles.emptyText}
+          >
+            No tagged posts yet
+          </Text>
+
+        </View>
+      )}
+
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    marginTop: 18,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "#24242D",
-    backgroundColor: "#080913",
-  },
+const styles =
+  StyleSheet.create({
 
-  tab: {
-    flex: 1,
-    height: 55,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+    wrapper: {
+      width: "100%",
+      backgroundColor: "#080913",
+    },
 
-  activeTab: {
-    borderBottomWidth: 3,
-    borderBottomColor: "#A855F7",
-  },
-});
+    container: {
+      flexDirection: "row",
+
+      marginTop: 18,
+
+      borderTopWidth: 1,
+      borderBottomWidth: 1,
+
+      borderColor: "#24242D",
+
+      backgroundColor: "#080913",
+    },
+
+    tab: {
+      flex: 1,
+
+      height: 55,
+
+      justifyContent: "center",
+      alignItems: "center",
+    },
+
+    activeTab: {
+      borderBottomWidth: 3,
+      borderBottomColor: "#A855F7",
+    },
+
+    empty: {
+      minHeight: 220,
+
+      justifyContent: "center",
+      alignItems: "center",
+
+      backgroundColor: "#080913",
+    },
+
+    emptyText: {
+      color: "#777",
+
+      fontSize: 14,
+
+      marginTop: 10,
+    },
+
+  });

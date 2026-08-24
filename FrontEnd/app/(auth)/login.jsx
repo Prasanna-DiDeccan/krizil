@@ -108,6 +108,16 @@ const handleLogin = async () => {
     <Text style={styles.loginText}>Log in</Text>
   </LinearGradient>
 </TouchableOpacity>
+
+{/* Skip For Now */}
+<TouchableOpacity
+  onPress={() => router.replace("/(tabs)")}
+>
+  <Text style={styles.skipText}>
+    Skip for now
+  </Text>
+</TouchableOpacity>
+
         {/* Forgot */}
         <TouchableOpacity   onPress={() =>
     router.push("/forgot-password")
@@ -218,4 +228,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
   },
+  skipText: {
+  textAlign: "center",
+  marginTop: 15,
+  color: Colors.primaryLight,
+  fontSize: 15,
+  fontWeight: "600",
+},
 });

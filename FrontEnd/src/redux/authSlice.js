@@ -103,7 +103,12 @@ export const verifyOtp =
           result.access_token,
           result.refresh_token
         );
+const storedRefreshToken = await getRefreshToken();
 
+console.log(
+  "STORED REFRESH TOKEN =>",
+  storedRefreshToken
+);
         // Save user
         if (result.user) {
           await saveUser(
@@ -168,12 +173,19 @@ export const loginUser =
           "LOGIN RESPONSE =>",
           result
         );
+        
 
         // Save tokens
         await saveTokens(
           result.access_token,
           result.refresh_token
         );
+        const storedRefreshToken = await getRefreshToken();
+
+console.log(
+  "STORED REFRESH TOKEN =>",
+  storedRefreshToken
+);
 
         // Save user
         if (result.user) {
