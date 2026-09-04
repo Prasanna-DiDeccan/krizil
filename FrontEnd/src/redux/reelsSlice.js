@@ -1581,87 +1581,6 @@ export const deleteReel = createAsyncThunk(
 );
 
 // ======================================================
-// LIKE REEL
-// ======================================================
-
-export const likeReel =
-  createAsyncThunk(
-    "reels/likeReel",
-
-    async (
-      reelId,
-      { rejectWithValue }
-    ) => {
-      try {
-        const response =
-          await api.post(
-            API_ENDPOINTS.likes.create,
-            {
-              target_type: "reel",
-              target_id: reelId,
-            }
-          );
-
-        return {
-          reelId,
-          data: response.data,
-        };
-      } catch (error) {
-        console.log(
-          "❌ LIKE REEL ERROR =>",
-          error?.response?.data
-        );
-
-        return rejectWithValue(
-          error?.response?.data ||
-            "Failed to like reel"
-        );
-      }
-    }
-  );
-
-// ======================================================
-// UNLIKE REEL
-// ======================================================
-
-export const unlikeReel =
-  createAsyncThunk(
-    "reels/unlikeReel",
-
-    async (
-      {
-        reelId,
-        likeId,
-      },
-      { rejectWithValue }
-    ) => {
-      try {
-        if (!likeId) {
-          return rejectWithValue(
-            "Like ID not found"
-          );
-        }
-
-        const response =
-          await api.delete(
-            `${API_ENDPOINTS.likes.delete}/${likeId}`
-          );
-
-        return {
-          reelId,
-          likeId,
-          data: response.data,
-        };
-      } catch (error) {
-        return rejectWithValue(
-          error?.response?.data ||
-            "Failed to unlike reel"
-        );
-      }
-    }
-  );
-
-// ======================================================
 // SAVE REEL
 // ======================================================
 
@@ -2497,84 +2416,84 @@ const reelsSlice =
           }
         )
 
-        .addCase(
-          deleteReel.fulfilled,
-          (
-            state,
-            action
-          ) => {
-            const reelId =
-              action.payload;
+      .addCase(
+  deleteReel.fulfilled,
+  (state, action) => {
+    const reelId =
+      action.payload.reelId;
 
-            state.deletingReelIds =
-              state.deletingReelIds.filter(
-                (id) =>
-                  id !== reelId
-              );
+    state.deletingReelIds =
+      state.deletingReelIds.filter(
+        (id) =>
+          Number(id) !== Number(reelId)
+      );
 
-            const wasGlobal =
-              state.reels.some(
-                (item) =>
-                  item?.id === reelId
-              );
+    const wasGlobal =
+      state.reels.some(
+        (item) =>
+          Number(item?.id) ===
+          Number(reelId)
+      );
 
-            const wasHome =
-              state.homeReels.some(
-                (item) =>
-                  item?.id === reelId
-              );
+    const wasHome =
+      state.homeReels.some(
+        (item) =>
+          Number(item?.id) ===
+          Number(reelId)
+      );
 
-            const wasUser =
-              state.userReels.some(
-                (item) =>
-                  item?.id === reelId
-              );
+    const wasUser =
+      state.userReels.some(
+        (item) =>
+          Number(item?.id) ===
+          Number(reelId)
+      );
 
-            state.reels =
-              state.reels.filter(
-                (item) =>
-                  item?.id !== reelId
-              );
+    state.reels =
+      state.reels.filter(
+        (item) =>
+          Number(item?.id) !==
+          Number(reelId)
+      );
 
-            state.homeReels =
-              state.homeReels.filter(
-                (item) =>
-                  item?.id !== reelId
-              );
+    state.homeReels =
+      state.homeReels.filter(
+        (item) =>
+          Number(item?.id) !==
+          Number(reelId)
+      );
 
-            state.userReels =
-              state.userReels.filter(
-                (item) =>
-                  item?.id !== reelId
-              );
+    state.userReels =
+      state.userReels.filter(
+        (item) =>
+          Number(item?.id) !==
+          Number(reelId)
+      );
 
-            if (wasGlobal) {
-              state.total =
-                Math.max(
-                  0,
-                  state.total - 1
-                );
-            }
+    if (wasGlobal) {
+      state.total = Math.max(
+        0,
+        state.total - 1
+      );
+    }
 
-            if (wasHome) {
-              state.homeReelsTotal =
-                Math.max(
-                  0,
-                  state.homeReelsTotal -
-                    1
-                );
-            }
+    if (wasHome) {
+      state.homeReelsTotal =
+        Math.max(
+          0,
+          state.homeReelsTotal - 1
+        );
+    }
 
-            if (wasUser) {
-              state.userReelsTotal =
-                Math.max(
-                  0,
-                  state.userReelsTotal -
-                    1
-                );
-            }
-          }
-        )
+    if (wasUser) {
+      state.userReelsTotal =
+        Math.max(
+          0,
+          state.userReelsTotal - 1
+        );
+    }
+  }
+)
 
         .addCase(
           deleteReel.rejected,
@@ -2597,106 +2516,7 @@ const reelsSlice =
           }
         );
 
-      // =================================================
-      // LIKE
-      // =================================================
-
-      builder
-        .addCase(
-          likeReel.fulfilled,
-          (
-            state,
-            action
-          ) => {
-            const {
-              reelId,
-              data,
-            } = action.payload;
-
-            updateAllReelLists(
-              state,
-              reelId,
-              (reel) => {
-                reel.is_liked = true;
-
-                reel.likes_count =
-                  data?.likes_count ??
-                  (reel.likes_count ||
-                    0) + 1;
-
-                const likeId =
-                  data?.like?.id ??
-                  data?.id ??
-                  null;
-
-                if (likeId) {
-                  reel.like_id =
-                    likeId;
-                }
-              }
-            );
-          }
-        )
-
-        .addCase(
-          likeReel.rejected,
-          (
-            state,
-            action
-          ) => {
-            state.error =
-              action.payload ||
-              "Failed to like reel";
-          }
-        );
-
-      // =================================================
-      // UNLIKE
-      // =================================================
-
-      builder
-        .addCase(
-          unlikeReel.fulfilled,
-          (
-            state,
-            action
-          ) => {
-            const {
-              reelId,
-            } = action.payload;
-
-            updateAllReelLists(
-              state,
-              reelId,
-              (reel) => {
-                reel.is_liked = false;
-
-                reel.likes_count =
-                  Math.max(
-                    0,
-                    (reel.likes_count ||
-                      0) - 1
-                  );
-
-                reel.like_id = null;
-              }
-            );
-          }
-        )
-
-        .addCase(
-          unlikeReel.rejected,
-          (
-            state,
-            action
-          ) => {
-            state.error =
-              action.payload ||
-              "Failed to unlike reel";
-          }
-        );
-
-      // =================================================
+          // =================================================
       // SAVE
       // =================================================
 

@@ -7,7 +7,9 @@ import {
   StyleSheet,
 } from "react-native";
 
-import { Ionicons } from "@expo/vector-icons";
+import {
+  Ionicons,
+} from "@expo/vector-icons";
 
 export default function CropPanel({
   aspectRatio,
@@ -16,22 +18,29 @@ export default function CropPanel({
   flip,
 }) {
   return (
-    <View style={styles.container}>
-
-      <Text style={styles.title}>
+    <View
+      style={styles.container}
+    >
+      <Text
+        style={styles.title}
+      >
         Crop
       </Text>
 
-      <View style={styles.row}>
-
+      <View
+        style={styles.row}
+      >
         <TouchableOpacity
           style={[
             styles.option,
-            aspectRatio === "1:1" &&
+            aspectRatio ===
+              "1:1" &&
               styles.active,
           ]}
           onPress={() =>
-            setAspectRatio("1:1")
+            setAspectRatio(
+              "1:1"
+            )
           }
         >
           <Ionicons
@@ -40,19 +49,24 @@ export default function CropPanel({
             color="#fff"
           />
 
-          <Text style={styles.text}>
-            Square
+          <Text
+            style={styles.text}
+          >
+            1:1
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[
             styles.option,
-            aspectRatio === "4:5" &&
+            aspectRatio ===
+              "4:5" &&
               styles.active,
           ]}
           onPress={() =>
-            setAspectRatio("4:5")
+            setAspectRatio(
+              "4:5"
+            )
           }
         >
           <Ionicons
@@ -61,7 +75,9 @@ export default function CropPanel({
             color="#fff"
           />
 
-          <Text style={styles.text}>
+          <Text
+            style={styles.text}
+          >
             4:5
           </Text>
         </TouchableOpacity>
@@ -76,7 +92,9 @@ export default function CropPanel({
             color="#fff"
           />
 
-          <Text style={styles.text}>
+          <Text
+            style={styles.text}
+          >
             Rotate
           </Text>
         </TouchableOpacity>
@@ -91,51 +109,54 @@ export default function CropPanel({
             color="#fff"
           />
 
-          <Text style={styles.text}>
+          <Text
+            style={styles.text}
+          >
             Flip
           </Text>
         </TouchableOpacity>
-
       </View>
-
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#000",
-    paddingTop: 10,
-    paddingHorizontal: 15,
-  },
+const styles =
+  StyleSheet.create({
+    container: {
+      backgroundColor: "#000",
+      paddingTop: 10,
+      paddingHorizontal: 15,
+    },
 
-  title: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "600",
-    marginBottom: 12,
-  },
+    title: {
+      color: "#fff",
+      fontSize: 15,
+      fontWeight: "600",
+      marginBottom: 12,
+    },
 
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
+    row: {
+      flexDirection: "row",
+      justifyContent:
+        "space-between",
+    },
 
-  option: {
-    width: 75,
-    height: 65,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+    option: {
+      width: 75,
+      height: 65,
+      borderRadius: 10,
+      alignItems: "center",
+      justifyContent: "center",
+    },
 
-  active: {
-    backgroundColor: "#8B5CF6",
-  },
+    active: {
+      backgroundColor:
+        "#8B5CF6",
+    },
 
-  text: {
-    color: "#fff",
-    fontSize: 11,
-    marginTop: 4,
-  },
-});
+    text: {
+      color: "#fff",
+      fontSize: 11,
+      marginTop: 4,
+    },
+  });

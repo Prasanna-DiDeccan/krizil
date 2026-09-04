@@ -1,4 +1,503 @@
-// import React, { useEffect, useState } from "react";
+// // import React, { useEffect, useState } from "react";
+
+// // import {
+// //   View,
+// //   Text,
+// //   TouchableOpacity,
+// //   StyleSheet,
+// //   Image,
+// // } from "react-native";
+
+// // import { useDispatch, useSelector } from "react-redux";
+
+// // import { useRouter } from "expo-router";
+
+// // import * as ImagePicker from "expo-image-picker";
+
+// // import {
+// //   getProfile,
+// // } from "../../redux/profileSlice";
+
+// // import { getUserStats } from "../../redux/statsSlice";
+
+// // import { getUser } from "../../utils/storage";
+
+// // import ProfileActions from "./ProfileActions";
+
+// // import { getMediaUrl } from "../../utils/media";
+
+// // import { Ionicons } from "@expo/vector-icons";
+
+// // export default function ProfileHeader() {
+// //   const dispatch = useDispatch();
+// //   const router = useRouter();
+
+// //   const [storedUser, setStoredUser] =
+// //     useState(null);
+
+// //   const { loginData, verifyOtpData } =
+// //     useSelector(
+// //       (state) => state.auth
+// //     );
+
+// //   const { profileData } =
+// //     useSelector(
+// //       (state) => state.profile
+// //     );
+
+// //   const { statsData } =
+// //     useSelector(
+// //       (state) => state.stats
+// //     );
+
+// //   // =====================================================
+// //   // LOAD STORED USER
+// //   // =====================================================
+
+// //   useEffect(() => {
+// //     const loadUser = async () => {
+// //       try {
+// //         const user = await getUser();
+
+// //         setStoredUser(user);
+// //       } catch (error) {
+// //         console.log(
+// //           "GET STORED USER ERROR =>",
+// //           error
+// //         );
+// //       }
+// //     };
+
+// //     loadUser();
+// //   }, []);
+
+// //   // =====================================================
+// //   // USER ID
+// //   // =====================================================
+
+// //   const userId =
+// //     loginData?.user?.id ||
+// //     verifyOtpData?.user?.id ||
+// //     storedUser?.id ||
+// //     profileData?.id;
+
+// //   // =====================================================
+// //   // LOAD PROFILE + STATS
+// //   // =====================================================
+
+// //   useEffect(() => {
+// //     if (!userId) {
+// //       return;
+// //     }
+
+// //     dispatch(
+// //       getProfile(userId)
+// //     );
+
+// //     dispatch(
+// //       getUserStats(userId)
+// //     );
+// //   }, [userId, dispatch]);
+
+// //   // =====================================================
+// //   // AVATAR URL
+// //   // =====================================================
+
+// //   const avatarUrl = getMediaUrl(
+// //     profileData?.avatar_url
+// //   );
+
+// //   // =====================================================
+// //   // COMMON AVATAR HANDLER
+// //   // =====================================================
+
+// //   const handleUploadAvatar = async () => {
+// //     try {
+// //       if (!userId) {
+// //         console.log(
+// //           "USER ID NOT AVAILABLE"
+// //         );
+// //         return;
+// //       }
+
+// //       const permission =
+// //         await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+// //       if (!permission.granted) {
+// //         return;
+// //       }
+
+// //       const result =
+// //         await ImagePicker.launchImageLibraryAsync({
+// //           mediaTypes:
+// //             ImagePicker.MediaTypeOptions.Images,
+
+// //           // VERY IMPORTANT
+// //           // Disable native Android crop.
+// //           // We use our AvatarCrop screen.
+// //           allowsEditing: false,
+
+// //           quality: 1,
+// //         });
+
+// //       if (result.canceled) {
+// //         return;
+// //       }
+
+// //       const image =
+// //         result.assets?.[0];
+
+// //       if (!image?.uri) {
+// //         return;
+// //       }
+
+// //       // =================================================
+// //       // OPEN SAME CUSTOM CROP SCREEN
+// //       // =================================================
+
+// //       router.push({
+// //         pathname:
+// //           "/profile-screens/avatar-crop",
+
+// //         params: {
+// //           imageUri: image.uri,
+// //           userId: String(userId),
+// //         },
+// //       });
+// //     } catch (error) {
+// //       console.log(
+// //         "SELECT AVATAR ERROR =>",
+// //         error
+// //       );
+// //     }
+// //   };
+
+// //   // =====================================================
+// //   // UI
+// //   // =====================================================
+
+// //   return (
+// //     <View style={styles.container}>
+
+// //       {/* ================================================= */}
+// //       {/* TOP BAR */}
+// //       {/* ================================================= */}
+
+// //       <View style={styles.topBar}>
+
+// //         {/* ADD AVATAR */}
+
+// //         <TouchableOpacity
+// //           onPress={handleUploadAvatar}
+// //           hitSlop={10}
+// //         >
+// //           <Text style={styles.topIcon}>
+// //             ＋
+// //           </Text>
+// //         </TouchableOpacity>
+
+// //         {/* USERNAME */}
+
+// //         <View style={styles.usernameRow}>
+
+// //           <Text style={styles.username}>
+// //             {profileData?.username ||
+// //               storedUser?.username ||
+// //               ""}
+// //           </Text>
+
+// //           <Ionicons
+// //             name="chevron-down"
+// //             size={18}
+// //             color="#fff"
+// //           />
+
+// //         </View>
+
+// //         {/* RIGHT ICONS */}
+
+// //         <View style={styles.rightIcons}>
+
+// //           <TouchableOpacity
+// //             hitSlop={10}
+// //           >
+// //             <Text style={styles.icon}>
+// //               ◎
+// //             </Text>
+// //           </TouchableOpacity>
+
+// //           <TouchableOpacity
+// //             onPress={() =>
+// //               router.push(
+// //                 "../profile-screens/settings-activity"
+// //               )
+// //             }
+// //             hitSlop={10}
+// //           >
+// //             <Text style={styles.icon}>
+// //               ☰
+// //             </Text>
+// //           </TouchableOpacity>
+
+// //         </View>
+
+// //       </View>
+
+// //       {/* ================================================= */}
+// //       {/* PROFILE IMAGE + STATS */}
+// //       {/* ================================================= */}
+
+// //       <View style={styles.profileRow}>
+
+// //         {/* AVATAR */}
+
+// //         <View style={styles.imageWrapper}>
+
+// //           <TouchableOpacity
+// //             onPress={handleUploadAvatar}
+// //             activeOpacity={0.8}
+// //           >
+// //             {avatarUrl ? (
+// //               <Image
+// //                 source={{
+// //                   uri: avatarUrl,
+// //                 }}
+// //                 style={styles.profileImage}
+// //               />
+// //             ) : (
+// //               <View
+// //                 style={
+// //                   styles.profileImagePlaceholder
+// //                 }
+// //               >
+// //                 <Ionicons
+// //                   name="person"
+// //                   size={38}
+// //                   color="#777"
+// //                 />
+// //               </View>
+// //             )}
+// //           </TouchableOpacity>
+
+// //           {/* PLUS */}
+
+// //           <TouchableOpacity
+// //             style={styles.plusButton}
+// //             onPress={handleUploadAvatar}
+// //           >
+// //             <Text style={styles.plusText}>
+// //               +
+// //             </Text>
+// //           </TouchableOpacity>
+
+// //         </View>
+
+// //         {/* ================================================= */}
+// //         {/* STATS */}
+// //         {/* ================================================= */}
+
+// //         <View style={styles.statsContainer}>
+
+// //           <View style={styles.statItem}>
+
+// //             <Text style={styles.statNumber}>
+// //               {statsData?.posts_count ?? 0}
+// //             </Text>
+
+// //             <Text style={styles.statLabel}>
+// //               posts
+// //             </Text>
+
+// //           </View>
+
+// //           <View style={styles.statItem}>
+
+// //             <Text style={styles.statNumber}>
+// //               {statsData?.followers_count ?? 0}
+// //             </Text>
+
+// //             <Text style={styles.statLabel}>
+// //               followers
+// //             </Text>
+
+// //           </View>
+
+// //           <View style={styles.statItem}>
+
+// //             <Text style={styles.statNumber}>
+// //               {statsData?.following_count ?? 0}
+// //             </Text>
+
+// //             <Text style={styles.statLabel}>
+// //               following
+// //             </Text>
+
+// //           </View>
+
+// //         </View>
+
+// //       </View>
+
+// //       {/* ================================================= */}
+// //       {/* BIO */}
+// //       {/* ================================================= */}
+
+// //       <View style={styles.bioSection}>
+
+// //         <Text style={styles.name}>
+// //           {profileData?.full_name ||
+// //             profileData?.username ||
+// //             storedUser?.username ||
+// //             ""}
+// //         </Text>
+
+// //         {profileData?.bio ? (
+// //           <Text style={styles.bio}>
+// //             {profileData.bio}
+// //           </Text>
+// //         ) : null}
+
+// //       </View>
+
+// //       <ProfileActions />
+
+// //     </View>
+// //   );
+// // }
+
+// // // =======================================================
+// // // STYLES
+// // // =======================================================
+
+// // const styles = StyleSheet.create({
+// //   container: {
+// //     backgroundColor: "#000",
+// //     paddingHorizontal: 15,
+// //     paddingTop: 55,
+// //   },
+
+// //   topBar: {
+// //     flexDirection: "row",
+// //     alignItems: "center",
+// //     justifyContent: "space-between",
+// //   },
+
+// //   topIcon: {
+// //     color: "#fff",
+// //     fontSize: 30,
+// //   },
+
+// //   usernameRow: {
+// //     flexDirection: "row",
+// //     alignItems: "center",
+// //     gap: 4,
+// //   },
+
+// //   username: {
+// //     color: "#fff",
+// //     fontSize: 24,
+// //     fontWeight: "600",
+// //   },
+
+// //   rightIcons: {
+// //     flexDirection: "row",
+// //     alignItems: "center",
+// //   },
+
+// //   icon: {
+// //     color: "#fff",
+// //     fontSize: 28,
+// //     marginLeft: 20,
+// //   },
+
+// //   profileRow: {
+// //     flexDirection: "row",
+// //     marginTop: 25,
+// //     alignItems: "center",
+// //   },
+
+// //   imageWrapper: {
+// //     position: "relative",
+// //   },
+
+// //   profileImage: {
+// //     width: 90,
+// //     height: 90,
+// //     borderRadius: 45,
+// //     backgroundColor: "#222",
+// //   },
+
+// //   profileImagePlaceholder: {
+// //     width: 90,
+// //     height: 90,
+// //     borderRadius: 45,
+// //     backgroundColor: "#222",
+// //     justifyContent: "center",
+// //     alignItems: "center",
+// //   },
+
+// //   plusButton: {
+// //     position: "absolute",
+// //     right: -4,
+// //     bottom: 0,
+// //     width: 28,
+// //     height: 28,
+// //     borderRadius: 14,
+// //     backgroundColor: "#0095F6",
+// //     justifyContent: "center",
+// //     alignItems: "center",
+// //     borderWidth: 2,
+// //     borderColor: "#000",
+// //   },
+
+// //   plusText: {
+// //     fontSize: 20,
+// //     fontWeight: "700",
+// //     color: "#fff",
+// //   },
+
+// //   statsContainer: {
+// //     flex: 1,
+// //     flexDirection: "row",
+// //     justifyContent: "space-around",
+// //     marginLeft: 20,
+// //   },
+
+// //   statItem: {
+// //     alignItems: "center",
+// //   },
+
+// //   statNumber: {
+// //     color: "#fff",
+// //     fontSize: 24,
+// //     fontWeight: "700",
+// //   },
+
+// //   statLabel: {
+// //     color: "#fff",
+// //     fontSize: 16,
+// //   },
+
+// //   bioSection: {
+// //     marginTop: 15,
+// //   },
+
+// //   name: {
+// //     color: "#fff",
+// //     fontSize: 18,
+// //     fontWeight: "700",
+// //   },
+
+// //   bio: {
+// //     color: "#fff",
+// //     marginTop: 5,
+// //   },
+// // });
+
+// import React, {
+//   useEffect,
+//   useState,
+// } from "react";
 
 // import {
 //   View,
@@ -6,9 +505,13 @@
 //   TouchableOpacity,
 //   StyleSheet,
 //   Image,
+//   Alert,
 // } from "react-native";
 
-// import { useDispatch, useSelector } from "react-redux";
+// import {
+//   useDispatch,
+//   useSelector,
+// } from "react-redux";
 
 // import { useRouter } from "expo-router";
 
@@ -18,62 +521,109 @@
 //   getProfile,
 // } from "../../redux/profileSlice";
 
-// import { getUserStats } from "../../redux/statsSlice";
+// import {
+//   getUserStats,
+// } from "../../redux/statsSlice";
 
-// import { getUser } from "../../utils/storage";
+// import {
+//   getUser,
+// } from "../../utils/storage";
 
 // import ProfileActions from "./ProfileActions";
 
-// import { getMediaUrl } from "../../utils/media";
+// import {
+//   getMediaUrl,
+// } from "../../utils/media";
 
-// import { Ionicons } from "@expo/vector-icons";
+// import {
+//   Ionicons,
+// } from "@expo/vector-icons";
+
 
 // export default function ProfileHeader() {
+
 //   const dispatch = useDispatch();
+
 //   const router = useRouter();
 
-//   const [storedUser, setStoredUser] =
-//     useState(null);
+//   const [
+//     storedUser,
+//     setStoredUser,
+//   ] = useState(null);
 
-//   const { loginData, verifyOtpData } =
-//     useSelector(
-//       (state) => state.auth
-//     );
 
-//   const { profileData } =
-//     useSelector(
-//       (state) => state.profile
-//     );
+//   // ======================================================
+//   // REDUX
+//   // ======================================================
 
-//   const { statsData } =
-//     useSelector(
-//       (state) => state.stats
-//     );
+//   const {
+//     loginData,
+//     verifyOtpData,
+//   } = useSelector(
+//     (state) => state.auth
+//   );
 
-//   // =====================================================
-//   // LOAD STORED USER
-//   // =====================================================
+
+//   const {
+//     profileData,
+//   } = useSelector(
+//     (state) => state.profile
+//   );
+
+
+//   const {
+//     statsData,
+//   } = useSelector(
+//     (state) => state.stats
+//   );
 
 //   useEffect(() => {
+//   console.log(
+//     "🔥 CURRENT PROFILE STATS =>",
+//     statsData
+//   );
+// }, [statsData]);
+
+
+//   // ======================================================
+//   // LOAD STORAGE USER
+//   // ======================================================
+
+//   useEffect(() => {
+
 //     const loadUser = async () => {
+
 //       try {
-//         const user = await getUser();
+
+//         const user =
+//           await getUser();
+
+//         console.log(
+//           "PROFILE STORAGE USER =>",
+//           user
+//         );
 
 //         setStoredUser(user);
+
 //       } catch (error) {
+
 //         console.log(
 //           "GET STORED USER ERROR =>",
 //           error
 //         );
+
 //       }
+
 //     };
 
 //     loadUser();
+
 //   }, []);
 
-//   // =====================================================
-//   // USER ID
-//   // =====================================================
+
+//   // ======================================================
+//   // GET USER ID
+//   // ======================================================
 
 //   const userId =
 //     loginData?.user?.id ||
@@ -81,130 +631,253 @@
 //     storedUser?.id ||
 //     profileData?.id;
 
-//   // =====================================================
-//   // LOAD PROFILE + STATS
-//   // =====================================================
+
+//   // ======================================================
+//   // GET PROFILE + STATS
+//   // ======================================================
 
 //   useEffect(() => {
+
 //     if (!userId) {
 //       return;
 //     }
+
+//     console.log(
+//       "PROFILE HEADER USER ID =>",
+//       userId
+//     );
+
 
 //     dispatch(
 //       getProfile(userId)
 //     );
 
+
 //     dispatch(
 //       getUserStats(userId)
 //     );
-//   }, [userId, dispatch]);
 
-//   // =====================================================
+//   }, [
+//     userId,
+//     dispatch,
+//   ]);
+
+
+//   // ======================================================
 //   // AVATAR URL
-//   // =====================================================
+//   // ======================================================
 
-//   const avatarUrl = getMediaUrl(
+//   const avatarUrl =
 //     profileData?.avatar_url
-//   );
+//       ? getMediaUrl(
+//           profileData.avatar_url
+//         )
+//       : null;
 
-//   // =====================================================
-//   // COMMON AVATAR HANDLER
-//   // =====================================================
 
-//   const handleUploadAvatar = async () => {
-//     try {
-//       if (!userId) {
+//   // ======================================================
+//   // SELECT AVATAR
+//   //
+//   // Gallery
+//   //    ↓
+//   // Avatar Crop Screen
+//   //    ↓
+//   // Upload
+//   //
+//   // SAME FLOW AS EDIT PROFILE
+//   // ======================================================
+
+//   const handleUploadAvatar =
+//     async () => {
+
+//       try {
+
+//         // ----------------------------------------------
+//         // CHECK USER
+//         // ----------------------------------------------
+
+//         if (!userId) {
+
+//           Alert.alert(
+//             "Error",
+//             "User information not available"
+//           );
+
+//           return;
+//         }
+
+
+//         // ----------------------------------------------
+//         // REQUEST GALLERY PERMISSION
+//         // ----------------------------------------------
+
+//         const permission =
+//           await ImagePicker
+//             .requestMediaLibraryPermissionsAsync();
+
+
+//         if (!permission.granted) {
+
+//           Alert.alert(
+//             "Permission Required",
+//             "Please allow gallery access"
+//           );
+
+//           return;
+//         }
+
+
+//         // ----------------------------------------------
+//         // OPEN GALLERY
+//         // ----------------------------------------------
+
+//         const result =
+//           await ImagePicker
+//             .launchImageLibraryAsync({
+
+//               mediaTypes:
+//                 ImagePicker
+//                   .MediaTypeOptions
+//                   .Images,
+
+//               // IMPORTANT:
+//               // Native crop is disabled.
+//               //
+//               // We use our own
+//               // /profile-screens/avatar-crop
+//               // screen.
+
+//               allowsEditing: false,
+
+//               quality: 1,
+
+//             });
+
+
+//         // ----------------------------------------------
+//         // USER CANCELLED
+//         // ----------------------------------------------
+
+//         if (result.canceled) {
+//           return;
+//         }
+
+
+//         // ----------------------------------------------
+//         // GET SELECTED IMAGE
+//         // ----------------------------------------------
+
+//         const image =
+//           result.assets?.[0];
+
+
+//         if (!image?.uri) {
+//           return;
+//         }
+
+
 //         console.log(
-//           "USER ID NOT AVAILABLE"
+//           "SELECTED AVATAR =>",
+//           image.uri
 //         );
-//         return;
-//       }
 
-//       const permission =
-//         await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-//       if (!permission.granted) {
-//         return;
-//       }
+//         // ----------------------------------------------
+//         // OPEN CUSTOM AVATAR CROP SCREEN
+//         // ----------------------------------------------
 
-//       const result =
-//         await ImagePicker.launchImageLibraryAsync({
-//           mediaTypes:
-//             ImagePicker.MediaTypeOptions.Images,
+//         router.push({
 
-//           // VERY IMPORTANT
-//           // Disable native Android crop.
-//           // We use our AvatarCrop screen.
-//           allowsEditing: false,
+//           pathname:
+//             "/profile-screens/avatar-crop",
 
-//           quality: 1,
+//           params: {
+
+//             imageUri:
+//               image.uri,
+
+//             userId:
+//               String(userId),
+
+//           },
+
 //         });
 
-//       if (result.canceled) {
-//         return;
+//       } catch (error) {
+
+//         console.log(
+//           "SELECT AVATAR ERROR =>",
+//           error
+//         );
+
+
+//         Alert.alert(
+//           "Error",
+//           "Unable to select image"
+//         );
+
 //       }
 
-//       const image =
-//         result.assets?.[0];
+//     };
 
-//       if (!image?.uri) {
-//         return;
-//       }
 
-//       // =================================================
-//       // OPEN SAME CUSTOM CROP SCREEN
-//       // =================================================
-
-//       router.push({
-//         pathname:
-//           "/profile-screens/avatar-crop",
-
-//         params: {
-//           imageUri: image.uri,
-//           userId: String(userId),
-//         },
-//       });
-//     } catch (error) {
-//       console.log(
-//         "SELECT AVATAR ERROR =>",
-//         error
-//       );
-//     }
-//   };
-
-//   // =====================================================
+//   // ======================================================
 //   // UI
-//   // =====================================================
+//   // ======================================================
 
 //   return (
-//     <View style={styles.container}>
+
+//     <View
+//       style={styles.container}
+//     >
 
 //       {/* ================================================= */}
 //       {/* TOP BAR */}
 //       {/* ================================================= */}
 
-//       <View style={styles.topBar}>
+//       <View
+//         style={styles.topBar}
+//       >
 
-//         {/* ADD AVATAR */}
+//         {/* TOP LEFT PLUS */}
 
 //         <TouchableOpacity
-//           onPress={handleUploadAvatar}
+//           onPress={
+//             handleUploadAvatar
+//           }
 //           hitSlop={10}
+//           activeOpacity={0.7}
 //         >
-//           <Text style={styles.topIcon}>
+
+//           <Text
+//             style={styles.topIcon}
+//           >
 //             ＋
 //           </Text>
+
 //         </TouchableOpacity>
+
 
 //         {/* USERNAME */}
 
-//         <View style={styles.usernameRow}>
+//         <View
+//           style={
+//             styles.usernameRow
+//           }
+//         >
 
-//           <Text style={styles.username}>
-//             {profileData?.username ||
+//           <Text
+//             style={styles.username}
+//           >
+
+//             {
+//               profileData?.username ||
 //               storedUser?.username ||
-//               ""}
+//               ""
+//             }
+
 //           </Text>
+
 
 //           <Ionicons
 //             name="chevron-down"
@@ -214,17 +887,28 @@
 
 //         </View>
 
+
 //         {/* RIGHT ICONS */}
 
-//         <View style={styles.rightIcons}>
+//         <View
+//           style={
+//             styles.rightIcons
+//           }
+//         >
 
 //           <TouchableOpacity
 //             hitSlop={10}
+//             activeOpacity={0.7}
 //           >
-//             <Text style={styles.icon}>
+
+//             <Text
+//               style={styles.icon}
+//             >
 //               ◎
 //             </Text>
+
 //           </TouchableOpacity>
+
 
 //           <TouchableOpacity
 //             onPress={() =>
@@ -233,268 +917,469 @@
 //               )
 //             }
 //             hitSlop={10}
+//             activeOpacity={0.7}
 //           >
-//             <Text style={styles.icon}>
+
+//             <Text
+//               style={styles.icon}
+//             >
 //               ☰
 //             </Text>
+
 //           </TouchableOpacity>
 
 //         </View>
 
 //       </View>
 
+
 //       {/* ================================================= */}
-//       {/* PROFILE IMAGE + STATS */}
+//       {/* PROFILE ROW */}
 //       {/* ================================================= */}
 
-//       <View style={styles.profileRow}>
+//       <View
+//         style={styles.profileRow}
+//       >
 
+//         {/* ================================================= */}
 //         {/* AVATAR */}
+//         {/* ================================================= */}
 
-//         <View style={styles.imageWrapper}>
+//         <View
+//           style={styles.imageWrapper}
+//         >
+
+//           {/* PROFILE IMAGE */}
 
 //           <TouchableOpacity
-//             onPress={handleUploadAvatar}
+//             onPress={
+//               handleUploadAvatar
+//             }
 //             activeOpacity={0.8}
 //           >
+
 //             {avatarUrl ? (
+
 //               <Image
 //                 source={{
 //                   uri: avatarUrl,
 //                 }}
-//                 style={styles.profileImage}
+//                 style={
+//                   styles.profileImage
+//                 }
 //               />
+
 //             ) : (
+
 //               <View
 //                 style={
 //                   styles.profileImagePlaceholder
 //                 }
 //               >
+
 //                 <Ionicons
 //                   name="person"
 //                   size={38}
 //                   color="#777"
 //                 />
+
 //               </View>
+
 //             )}
+
 //           </TouchableOpacity>
 
-//           {/* PLUS */}
+
+//           {/* ================================================= */}
+//           {/* PLUS BUTTON */}
+//           {/* ================================================= */}
 
 //           <TouchableOpacity
-//             style={styles.plusButton}
-//             onPress={handleUploadAvatar}
+//             style={
+//               styles.plusButton
+//             }
+//             onPress={
+//               handleUploadAvatar
+//             }
+//             activeOpacity={0.8}
 //           >
-//             <Text style={styles.plusText}>
+
+//             <Text
+//               style={styles.plusText}
+//             >
 //               +
 //             </Text>
+
 //           </TouchableOpacity>
 
 //         </View>
+
 
 //         {/* ================================================= */}
 //         {/* STATS */}
 //         {/* ================================================= */}
 
-//         <View style={styles.statsContainer}>
+//         <View
+//           style={
+//             styles.statsContainer
+//           }
+//         >
 
-//           <View style={styles.statItem}>
+//           {/* POSTS */}
 
-//             <Text style={styles.statNumber}>
-//               {statsData?.posts_count ?? 0}
+//           <View
+//             style={styles.statItem}
+//           >
+
+//             <Text
+//               style={
+//                 styles.statNumber
+//               }
+//             >
+
+//               {
+//                 statsData?.posts_count ??
+//                 0
+//               }
+
 //             </Text>
 
-//             <Text style={styles.statLabel}>
+
+//             <Text
+//               style={
+//                 styles.statLabel
+//               }
+//             >
 //               posts
 //             </Text>
 
 //           </View>
 
-//           <View style={styles.statItem}>
 
-//             <Text style={styles.statNumber}>
-//               {statsData?.followers_count ?? 0}
-//             </Text>
+//           {/* FOLLOWERS */}
 
-//             <Text style={styles.statLabel}>
-//               followers
-//             </Text>
+// <TouchableOpacity
+//   style={styles.statItem}
+//   activeOpacity={0.7}
+//   onPress={() => {
+//     if (!userId) {
+//       Alert.alert(
+//         "Error",
+//         "User information not available"
+//       );
+//       return;
+//     }
 
-//           </View>
+//     router.push({
+//       pathname: "/profile-screens/followers",
+//       params: {
+//         userId: String(userId),
+//       },
+//     });
+//   }}
+// >
 
-//           <View style={styles.statItem}>
+//   <Text
+//     style={styles.statNumber}
+//   >
+//     {
+//       statsData?.followers_count ??
+//       0
+//     }
+//   </Text>
 
-//             <Text style={styles.statNumber}>
-//               {statsData?.following_count ?? 0}
-//             </Text>
+//   <Text
+//     style={styles.statLabel}
+//   >
+//     followers
+//   </Text>
 
-//             <Text style={styles.statLabel}>
-//               following
-//             </Text>
+// </TouchableOpacity>
 
-//           </View>
+// {/* FOLLOWING */}
+
+// <TouchableOpacity
+//   style={styles.statItem}
+//   activeOpacity={0.7}
+//   onPress={() => {
+//     if (!userId) {
+//       Alert.alert(
+//         "Error",
+//         "User information not available"
+//       );
+//       return;
+//     }
+
+//     router.push({
+//       pathname: "/profile-screens/following",
+//       params: {
+//         userId: String(userId),
+//       },
+//     });
+//   }}
+// >
+
+//   <Text
+//     style={styles.statNumber}
+//   >
+//     {
+//       statsData?.following_count ??
+//       0
+//     }
+//   </Text>
+
+//   <Text
+//     style={styles.statLabel}
+//   >
+//     following
+//   </Text>
+
+// </TouchableOpacity>
 
 //         </View>
 
 //       </View>
 
+
 //       {/* ================================================= */}
 //       {/* BIO */}
 //       {/* ================================================= */}
 
-//       <View style={styles.bioSection}>
+//       <View
+//         style={styles.bioSection}
+//       >
 
-//         <Text style={styles.name}>
-//           {profileData?.full_name ||
+//         <Text
+//           style={styles.name}
+//         >
+
+//           {
+//             profileData?.full_name ||
 //             profileData?.username ||
 //             storedUser?.username ||
-//             ""}
+//             ""
+//           }
+
 //         </Text>
 
-//         {profileData?.bio ? (
-//           <Text style={styles.bio}>
-//             {profileData.bio}
-//           </Text>
-//         ) : null}
+
+//         {
+//           profileData?.bio ? (
+
+//             <Text
+//               style={styles.bio}
+//             >
+//               {profileData.bio}
+//             </Text>
+
+//           ) : null
+//         }
 
 //       </View>
+
+
+//       {/* ================================================= */}
+//       {/* PROFILE ACTIONS */}
+//       {/* ================================================= */}
 
 //       <ProfileActions />
 
 //     </View>
+
 //   );
+
 // }
 
-// // =======================================================
+
+// // ======================================================
 // // STYLES
-// // =======================================================
+// // ======================================================
 
-// const styles = StyleSheet.create({
-//   container: {
-//     backgroundColor: "#000",
-//     paddingHorizontal: 15,
-//     paddingTop: 55,
-//   },
+// const styles =
+//   StyleSheet.create({
 
-//   topBar: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "space-between",
-//   },
+//     container: {
+//       backgroundColor: "#000",
+//       paddingHorizontal: 15,
+//       paddingTop: 55,
+//     },
 
-//   topIcon: {
-//     color: "#fff",
-//     fontSize: 30,
-//   },
 
-//   usernameRow: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     gap: 4,
-//   },
+//     // ==================================================
+//     // TOP BAR
+//     // ==================================================
 
-//   username: {
-//     color: "#fff",
-//     fontSize: 24,
-//     fontWeight: "600",
-//   },
+//     topBar: {
+//       flexDirection: "row",
+//       alignItems: "center",
+//       justifyContent:
+//         "space-between",
+//     },
 
-//   rightIcons: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//   },
 
-//   icon: {
-//     color: "#fff",
-//     fontSize: 28,
-//     marginLeft: 20,
-//   },
+//     topIcon: {
+//       color: "#fff",
+//       fontSize: 30,
+//     },
 
-//   profileRow: {
-//     flexDirection: "row",
-//     marginTop: 25,
-//     alignItems: "center",
-//   },
 
-//   imageWrapper: {
-//     position: "relative",
-//   },
+//     usernameRow: {
+//       flexDirection: "row",
+//       alignItems: "center",
+//       gap: 4,
+//     },
 
-//   profileImage: {
-//     width: 90,
-//     height: 90,
-//     borderRadius: 45,
-//     backgroundColor: "#222",
-//   },
 
-//   profileImagePlaceholder: {
-//     width: 90,
-//     height: 90,
-//     borderRadius: 45,
-//     backgroundColor: "#222",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
+//     username: {
+//       color: "#fff",
+//       fontSize: 24,
+//       fontWeight: "600",
+//     },
 
-//   plusButton: {
-//     position: "absolute",
-//     right: -4,
-//     bottom: 0,
-//     width: 28,
-//     height: 28,
-//     borderRadius: 14,
-//     backgroundColor: "#0095F6",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     borderWidth: 2,
-//     borderColor: "#000",
-//   },
 
-//   plusText: {
-//     fontSize: 20,
-//     fontWeight: "700",
-//     color: "#fff",
-//   },
+//     rightIcons: {
+//       flexDirection: "row",
+//       alignItems: "center",
+//     },
 
-//   statsContainer: {
-//     flex: 1,
-//     flexDirection: "row",
-//     justifyContent: "space-around",
-//     marginLeft: 20,
-//   },
 
-//   statItem: {
-//     alignItems: "center",
-//   },
+//     icon: {
+//       color: "#fff",
+//       fontSize: 28,
+//       marginLeft: 20,
+//     },
 
-//   statNumber: {
-//     color: "#fff",
-//     fontSize: 24,
-//     fontWeight: "700",
-//   },
 
-//   statLabel: {
-//     color: "#fff",
-//     fontSize: 16,
-//   },
+//     // ==================================================
+//     // PROFILE ROW
+//     // ==================================================
 
-//   bioSection: {
-//     marginTop: 15,
-//   },
+//     profileRow: {
+//       flexDirection: "row",
+//       marginTop: 25,
+//       alignItems: "center",
+//     },
 
-//   name: {
-//     color: "#fff",
-//     fontSize: 18,
-//     fontWeight: "700",
-//   },
 
-//   bio: {
-//     color: "#fff",
-//     marginTop: 5,
-//   },
-// });
+//     // ==================================================
+//     // IMAGE WRAPPER
+//     // ==================================================
+
+//     imageWrapper: {
+//       position: "relative",
+//     },
+
+
+//     // ==================================================
+//     // PROFILE IMAGE
+//     // ==================================================
+
+//     profileImage: {
+//       width: 90,
+//       height: 90,
+//       borderRadius: 45,
+//       backgroundColor: "#222",
+//     },
+
+
+//     profileImagePlaceholder: {
+//       width: 90,
+//       height: 90,
+//       borderRadius: 45,
+//       backgroundColor: "#222",
+//       justifyContent: "center",
+//       alignItems: "center",
+//     },
+
+
+//     // ==================================================
+//     // PLUS BUTTON
+//     // ==================================================
+
+//     plusButton: {
+//       position: "absolute",
+//       right: -4,
+//       bottom: 0,
+//       width: 28,
+//       height: 28,
+//       borderRadius: 14,
+//       backgroundColor: "#0095F6",
+//       justifyContent: "center",
+//       alignItems: "center",
+//       borderWidth: 2,
+//       borderColor: "#000",
+//     },
+
+
+//     plusText: {
+//       fontSize: 20,
+//       fontWeight: "700",
+//       color: "#fff",
+//     },
+
+
+//     // ==================================================
+//     // STATS
+//     // ==================================================
+
+//     statsContainer: {
+//       flex: 1,
+//       flexDirection: "row",
+//       justifyContent:
+//         "space-around",
+//       marginLeft: 20,
+//     },
+
+
+//     statItem: {
+//       alignItems: "center",
+//     },
+
+
+//     statNumber: {
+//       color: "#fff",
+//       fontSize: 24,
+//       fontWeight: "700",
+//     },
+
+
+//     statLabel: {
+//       color: "#fff",
+//       fontSize: 16,
+//     },
+
+
+//     // ==================================================
+//     // BIO
+//     // ==================================================
+
+//     bioSection: {
+//       marginTop: 15,
+//     },
+
+
+//     name: {
+//       color: "#fff",
+//       fontSize: 18,
+//       fontWeight: "700",
+//     },
+
+
+//     bio: {
+//       color: "#fff",
+//       marginTop: 5,
+//     },
+
+//   });
+
+
+
+
+
+
 
 import React, {
+  useCallback,
   useEffect,
   useState,
 } from "react";
@@ -513,7 +1398,10 @@ import {
   useSelector,
 } from "react-redux";
 
-import { useRouter } from "expo-router";
+import {
+  useRouter,
+  useFocusEffect,
+} from "expo-router";
 
 import * as ImagePicker from "expo-image-picker";
 
@@ -546,6 +1434,11 @@ export default function ProfileHeader() {
 
   const router = useRouter();
 
+
+  // ======================================================
+  // STORED USER
+  // ======================================================
+
   const [
     storedUser,
     setStoredUser,
@@ -553,7 +1446,7 @@ export default function ProfileHeader() {
 
 
   // ======================================================
-  // REDUX
+  // AUTH
   // ======================================================
 
   const {
@@ -564,29 +1457,8 @@ export default function ProfileHeader() {
   );
 
 
-  const {
-    profileData,
-  } = useSelector(
-    (state) => state.profile
-  );
-
-
-  const {
-    statsData,
-  } = useSelector(
-    (state) => state.stats
-  );
-
-  useEffect(() => {
-  console.log(
-    "🔥 CURRENT PROFILE STATS =>",
-    statsData
-  );
-}, [statsData]);
-
-
   // ======================================================
-  // LOAD STORAGE USER
+  // LOAD STORED USER
   // ======================================================
 
   useEffect(() => {
@@ -622,29 +1494,101 @@ export default function ProfileHeader() {
 
 
   // ======================================================
-  // GET USER ID
+  // USER ID
   // ======================================================
 
   const userId =
     loginData?.user?.id ||
     verifyOtpData?.user?.id ||
-    storedUser?.id ||
-    profileData?.id;
+    storedUser?.id;
 
 
   // ======================================================
-  // GET PROFILE + STATS
+  // PROFILE FROM REDUX
+  //
+  // IMPORTANT:
+  //
+  // profileSlice stores:
+  //
+  // profiles[userId]
+  //
+  // NOT:
+  //
+  // profileData
+  // ======================================================
+
+  const profileData = useSelector(
+    (state) =>
+      userId
+        ? state.profile.profiles[userId]
+        : null
+  );
+
+
+  // ======================================================
+  // STATS
+  // ======================================================
+
+  const {
+    statsData,
+  } = useSelector(
+    (state) => state.stats
+  );
+
+
+  // ======================================================
+  // DEBUG PROFILE
   // ======================================================
 
   useEffect(() => {
+
+    console.log(
+      "🔥 PROFILE HEADER REDUX PROFILE =>",
+      profileData
+    );
+
+  }, [profileData]);
+
+
+  // ======================================================
+  // DEBUG STATS
+  // ======================================================
+
+  useEffect(() => {
+
+    console.log(
+      "🔥 CURRENT PROFILE STATS =>",
+      statsData
+    );
+
+  }, [statsData]);
+
+
+  // ======================================================
+  // FETCH PROFILE
+  // ======================================================
+
+  const loadProfile = useCallback(() => {
 
     if (!userId) {
       return;
     }
 
     console.log(
-      "PROFILE HEADER USER ID =>",
+      "================================"
+    );
+
+    console.log(
+      "👤 PROFILE HEADER FETCH"
+    );
+
+    console.log(
+      "USER ID =>",
       userId
+    );
+
+    console.log(
+      "================================"
     );
 
 
@@ -652,15 +1596,73 @@ export default function ProfileHeader() {
       getProfile(userId)
     );
 
-
     dispatch(
       getUserStats(userId)
     );
 
   }, [
-    userId,
     dispatch,
+    userId,
   ]);
+
+
+  // ======================================================
+  // INITIAL LOAD
+  // ======================================================
+
+  useEffect(() => {
+
+    loadProfile();
+
+  }, [
+    loadProfile,
+  ]);
+
+
+  // ======================================================
+  // REFRESH WHEN RETURNING FROM EDIT PROFILE
+  //
+  // Edit Profile
+  //       ↓
+  // Save
+  //       ↓
+  // Back
+  //       ↓
+  // Profile screen gets focus
+  //       ↓
+  // GET PROFILE again
+  // ======================================================
+
+  useFocusEffect(
+    useCallback(() => {
+
+      if (!userId) {
+        return;
+      }
+
+      console.log(
+        "🔄 PROFILE SCREEN FOCUSED"
+      );
+
+      console.log(
+        "🔄 REFRESHING PROFILE =>",
+        userId
+      );
+
+
+      dispatch(
+        getProfile(userId)
+      );
+
+      dispatch(
+        getUserStats(userId)
+      );
+
+    }, [
+      dispatch,
+      userId,
+    ])
+  );
 
 
   // ======================================================
@@ -676,25 +1678,13 @@ export default function ProfileHeader() {
 
 
   // ======================================================
-  // SELECT AVATAR
-  //
-  // Gallery
-  //    ↓
-  // Avatar Crop Screen
-  //    ↓
-  // Upload
-  //
-  // SAME FLOW AS EDIT PROFILE
+  // AVATAR UPLOAD
   // ======================================================
 
   const handleUploadAvatar =
     async () => {
 
       try {
-
-        // ----------------------------------------------
-        // CHECK USER
-        // ----------------------------------------------
 
         if (!userId) {
 
@@ -706,10 +1696,6 @@ export default function ProfileHeader() {
           return;
         }
 
-
-        // ----------------------------------------------
-        // REQUEST GALLERY PERMISSION
-        // ----------------------------------------------
 
         const permission =
           await ImagePicker
@@ -727,10 +1713,6 @@ export default function ProfileHeader() {
         }
 
 
-        // ----------------------------------------------
-        // OPEN GALLERY
-        // ----------------------------------------------
-
         const result =
           await ImagePicker
             .launchImageLibraryAsync({
@@ -740,13 +1722,6 @@ export default function ProfileHeader() {
                   .MediaTypeOptions
                   .Images,
 
-              // IMPORTANT:
-              // Native crop is disabled.
-              //
-              // We use our own
-              // /profile-screens/avatar-crop
-              // screen.
-
               allowsEditing: false,
 
               quality: 1,
@@ -754,18 +1729,10 @@ export default function ProfileHeader() {
             });
 
 
-        // ----------------------------------------------
-        // USER CANCELLED
-        // ----------------------------------------------
-
         if (result.canceled) {
           return;
         }
 
-
-        // ----------------------------------------------
-        // GET SELECTED IMAGE
-        // ----------------------------------------------
 
         const image =
           result.assets?.[0];
@@ -781,10 +1748,6 @@ export default function ProfileHeader() {
           image.uri
         );
 
-
-        // ----------------------------------------------
-        // OPEN CUSTOM AVATAR CROP SCREEN
-        // ----------------------------------------------
 
         router.push({
 
@@ -809,7 +1772,6 @@ export default function ProfileHeader() {
           "SELECT AVATAR ERROR =>",
           error
         );
-
 
         Alert.alert(
           "Error",
@@ -839,8 +1801,6 @@ export default function ProfileHeader() {
         style={styles.topBar}
       >
 
-        {/* TOP LEFT PLUS */}
-
         <TouchableOpacity
           onPress={
             handleUploadAvatar
@@ -861,9 +1821,7 @@ export default function ProfileHeader() {
         {/* USERNAME */}
 
         <View
-          style={
-            styles.usernameRow
-          }
+          style={styles.usernameRow}
         >
 
           <Text
@@ -891,9 +1849,7 @@ export default function ProfileHeader() {
         {/* RIGHT ICONS */}
 
         <View
-          style={
-            styles.rightIcons
-          }
+          style={styles.rightIcons}
         >
 
           <TouchableOpacity
@@ -941,15 +1897,11 @@ export default function ProfileHeader() {
         style={styles.profileRow}
       >
 
-        {/* ================================================= */}
         {/* AVATAR */}
-        {/* ================================================= */}
 
         <View
           style={styles.imageWrapper}
         >
-
-          {/* PROFILE IMAGE */}
 
           <TouchableOpacity
             onPress={
@@ -990,9 +1942,7 @@ export default function ProfileHeader() {
           </TouchableOpacity>
 
 
-          {/* ================================================= */}
-          {/* PLUS BUTTON */}
-          {/* ================================================= */}
+          {/* PLUS */}
 
           <TouchableOpacity
             style={
@@ -1036,14 +1986,12 @@ export default function ProfileHeader() {
                 styles.statNumber
               }
             >
-
               {
                 statsData?.posts_count ??
+                profileData?.posts_count ??
                 0
               }
-
             </Text>
-
 
             <Text
               style={
@@ -1058,64 +2006,108 @@ export default function ProfileHeader() {
 
           {/* FOLLOWERS */}
 
-          <View
+          <TouchableOpacity
             style={styles.statItem}
+            activeOpacity={0.7}
+            onPress={() => {
+
+              if (!userId) {
+
+                Alert.alert(
+                  "Error",
+                  "User information not available"
+                );
+
+                return;
+              }
+
+
+              router.push({
+
+                pathname:
+                  "/profile-screens/followers",
+
+                params: {
+                  userId:
+                    String(userId),
+                },
+
+              });
+
+            }}
           >
 
             <Text
-              style={
-                styles.statNumber
-              }
+              style={styles.statNumber}
             >
-
               {
                 statsData?.followers_count ??
+                profileData?.followers_count ??
                 0
               }
-
             </Text>
 
-
             <Text
-              style={
-                styles.statLabel
-              }
+              style={styles.statLabel}
             >
               followers
             </Text>
 
-          </View>
+          </TouchableOpacity>
 
 
           {/* FOLLOWING */}
 
-          <View
+          <TouchableOpacity
             style={styles.statItem}
+            activeOpacity={0.7}
+            onPress={() => {
+
+              if (!userId) {
+
+                Alert.alert(
+                  "Error",
+                  "User information not available"
+                );
+
+                return;
+              }
+
+
+              router.push({
+
+                pathname:
+                  "/profile-screens/followers",
+
+                params: {
+                  userId:
+                    String(userId),
+
+                    initialTab: "following",
+                },
+
+              });
+
+            }}
           >
 
             <Text
-              style={
-                styles.statNumber
-              }
+              style={styles.statNumber}
             >
-
               {
                 statsData?.following_count ??
+                profileData?.following_count ??
                 0
               }
-
             </Text>
 
-
             <Text
-              style={
-                styles.statLabel
-              }
+              style={styles.statLabel}
             >
               following
             </Text>
 
-          </View>
+          </TouchableOpacity>
 
         </View>
 
@@ -1182,13 +2174,8 @@ const styles =
     container: {
       backgroundColor: "#000",
       paddingHorizontal: 15,
-      paddingTop: 55,
+      // paddingTop: 55,
     },
-
-
-    // ==================================================
-    // TOP BAR
-    // ==================================================
 
     topBar: {
       flexDirection: "row",
@@ -1197,12 +2184,10 @@ const styles =
         "space-between",
     },
 
-
     topIcon: {
       color: "#fff",
       fontSize: 30,
     },
-
 
     usernameRow: {
       flexDirection: "row",
@@ -1210,19 +2195,16 @@ const styles =
       gap: 4,
     },
 
-
     username: {
       color: "#fff",
       fontSize: 24,
       fontWeight: "600",
     },
 
-
     rightIcons: {
       flexDirection: "row",
       alignItems: "center",
     },
-
 
     icon: {
       color: "#fff",
@@ -1230,30 +2212,15 @@ const styles =
       marginLeft: 20,
     },
 
-
-    // ==================================================
-    // PROFILE ROW
-    // ==================================================
-
     profileRow: {
       flexDirection: "row",
       marginTop: 25,
       alignItems: "center",
     },
 
-
-    // ==================================================
-    // IMAGE WRAPPER
-    // ==================================================
-
     imageWrapper: {
       position: "relative",
     },
-
-
-    // ==================================================
-    // PROFILE IMAGE
-    // ==================================================
 
     profileImage: {
       width: 90,
@@ -1261,7 +2228,6 @@ const styles =
       borderRadius: 45,
       backgroundColor: "#222",
     },
-
 
     profileImagePlaceholder: {
       width: 90,
@@ -1271,11 +2237,6 @@ const styles =
       justifyContent: "center",
       alignItems: "center",
     },
-
-
-    // ==================================================
-    // PLUS BUTTON
-    // ==================================================
 
     plusButton: {
       position: "absolute",
@@ -1291,17 +2252,11 @@ const styles =
       borderColor: "#000",
     },
 
-
     plusText: {
       fontSize: 20,
       fontWeight: "700",
       color: "#fff",
     },
-
-
-    // ==================================================
-    // STATS
-    // ==================================================
 
     statsContainer: {
       flex: 1,
@@ -1311,11 +2266,9 @@ const styles =
       marginLeft: 20,
     },
 
-
     statItem: {
       alignItems: "center",
     },
-
 
     statNumber: {
       color: "#fff",
@@ -1323,21 +2276,14 @@ const styles =
       fontWeight: "700",
     },
 
-
     statLabel: {
       color: "#fff",
       fontSize: 16,
     },
 
-
-    // ==================================================
-    // BIO
-    // ==================================================
-
     bioSection: {
       marginTop: 15,
     },
-
 
     name: {
       color: "#fff",
@@ -1345,10 +2291,11 @@ const styles =
       fontWeight: "700",
     },
 
-
     bio: {
       color: "#fff",
       marginTop: 5,
     },
 
   });
+
+

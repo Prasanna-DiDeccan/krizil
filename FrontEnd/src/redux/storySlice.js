@@ -10,229 +10,258 @@ import { API_ENDPOINTS } from "../config/apiEndpoints";
 // GET STORY FEED
 // =====================================================
 
-export const getStoryFeed =
-  createAsyncThunk(
-    "stories/getStoryFeed",
-    async (_, { rejectWithValue }) => {
-      try {
-        const response = await api.get(
-          API_ENDPOINTS.stories.getStoryFeed
-        );
+export const getStoryFeed = createAsyncThunk(
+  "stories/getStoryFeed",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get(
+        API_ENDPOINTS.stories.getStoryFeed
+      );
 
-        return response.data.items || [];
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data ||
-            error.message
-        );
-      }
+      console.log(
+        "STORY FEED RESPONSE =>",
+        response.data
+      );
+
+      return response.data?.items || [];
+    } catch (error) {
+      console.log(
+        "GET STORY FEED ERROR =>",
+        error.response?.data || error.message
+      );
+
+      return rejectWithValue(
+        error.response?.data || error.message
+      );
     }
-  );
+  }
+);
 
 // =====================================================
 // GET MY STORIES
 // =====================================================
 
-export const getMyStories =
-  createAsyncThunk(
-    "stories/getMyStories",
-    async (_, { rejectWithValue }) => {
-      try {
-        const response = await api.get(
-          API_ENDPOINTS.stories.getMyStories
-        );
+export const getMyStories = createAsyncThunk(
+  "stories/getMyStories",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get(
+        API_ENDPOINTS.stories.getMyStories
+      );
 
-        console.log(
-          "MY STORIES RESPONSE =>",
-          response.data
-        );
+      console.log(
+        "MY STORIES RESPONSE =>",
+        response.data
+      );
 
-        return response.data;
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data ||
-            error.message
-        );
-      }
+      return response.data;
+    } catch (error) {
+      console.log(
+        "GET MY STORIES ERROR =>",
+        error.response?.data || error.message
+      );
+
+      return rejectWithValue(
+        error.response?.data || error.message
+      );
     }
-  );
+  }
+);
 
 // =====================================================
 // CREATE STORY
 // =====================================================
 
-export const createStory =
-  createAsyncThunk(
-    "stories/createStory",
-    async (
-      { file, caption },
-      { rejectWithValue }
-    ) => {
-      try {
-        const formData = new FormData();
+export const createStory = createAsyncThunk(
+  "stories/createStory",
+  async (
+    { file, caption },
+    { rejectWithValue }
+  ) => {
+    try {
+      console.log(
+        "===================================="
+      );
+      console.log("CREATING STORY...");
+      console.log("URI =>", file?.uri);
+      console.log("TYPE =>", file?.type);
+      console.log(
+        "FILENAME =>",
+        file?.fileName
+      );
+      console.log(
+        "MIMETYPE =>",
+        file?.mimeType
+      );
+      console.log(
+        "===================================="
+      );
 
-        formData.append("file", {
-          uri: file.uri,
-          name:
-            file.fileName ||
-            "story.jpg",
-          type:
-            file.mimeType ||
-            "image/jpeg",
-        });
+      const formData = new FormData();
 
-        if (caption) {
-          formData.append(
-            "caption",
-            caption
-          );
-        }
+      formData.append("file", {
+        uri: file.uri,
+        name:
+          file.fileName ||
+          "story.jpg",
+        type:
+          file.mimeType ||
+          "image/jpeg",
+      });
 
-        const response =
-          await api.post(
-            API_ENDPOINTS.stories
-              .createStory,
-            formData,
-            {
-              headers: {
-                "Content-Type":
-                  "multipart/form-data",
-              },
-            }
-          );
-
-        console.log(
-          "CREATE STORY RESPONSE =>",
-          response.data
-        );
-
-        return response.data;
-      } catch (error) {
-        console.log(
-          "CREATE STORY ERROR =>",
-          error.response?.data ||
-            error.message
-        );
-
-        return rejectWithValue(
-          error.response?.data ||
-            error.message
+      if (caption) {
+        formData.append(
+          "caption",
+          caption
         );
       }
+
+      const response = await api.post(
+        API_ENDPOINTS.stories.createStory,
+        formData,
+        {
+          headers: {
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
+      );
+
+      console.log(
+        "CREATE STORY RESPONSE =>",
+        response.data
+      );
+
+      return response.data;
+    } catch (error) {
+      console.log(
+        "CREATE STORY ERROR =>",
+        error.response?.data ||
+          error.message
+      );
+
+      return rejectWithValue(
+        error.response?.data ||
+          error.message
+      );
     }
-  );
+  }
+);
 
 // =====================================================
 // VIEW STORY
 // =====================================================
 
-export const viewStory =
-  createAsyncThunk(
-    "stories/viewStory",
-    async (
-      storyId,
-      { rejectWithValue }
-    ) => {
-      try {
-        const response =
-          await api.post(
-            API_ENDPOINTS.stories.viewStory(
-              storyId
-            )
-          );
-
-        console.log(
-          "VIEW STORY RESPONSE =>",
-          response.data
+export const viewStory = createAsyncThunk(
+  "stories/viewStory",
+  async (
+    storyId,
+    { rejectWithValue }
+  ) => {
+    try {
+      const response =
+        await api.post(
+          API_ENDPOINTS.stories.viewStory(
+            storyId
+          )
         );
 
-        return {
-          storyId,
-          ...response.data,
-        };
-      } catch (error) {
-        console.log(
-          "VIEW STORY ERROR =>",
-          error.response?.data ||
-            error.message
-        );
+      console.log(
+        "VIEW STORY RESPONSE =>",
+        response.data
+      );
 
-        return rejectWithValue(
-          error.response?.data ||
-            error.message
-        );
-      }
+      return {
+        storyId,
+        ...response.data,
+      };
+    } catch (error) {
+      console.log(
+        "VIEW STORY ERROR =>",
+        error.response?.data ||
+          error.message
+      );
+
+      return rejectWithValue(
+        error.response?.data ||
+          error.message
+      );
     }
-  );
+  }
+);
 
 // =====================================================
 // DELETE STORY
 // =====================================================
 
-export const deleteStory =
-  createAsyncThunk(
-    "stories/deleteStory",
-    async (
-      storyId,
-      { rejectWithValue }
-    ) => {
-      try {
-        const response =
-          await api.delete(
-            API_ENDPOINTS.stories.deleteStory(
-              storyId
-            )
-          );
-
-        console.log(
-          "DELETE STORY RESPONSE =>",
-          response.data
+export const deleteStory = createAsyncThunk(
+  "stories/deleteStory",
+  async (
+    storyId,
+    { rejectWithValue }
+  ) => {
+    try {
+      const response =
+        await api.delete(
+          API_ENDPOINTS.stories.deleteStory(
+            storyId
+          )
         );
 
-        return storyId;
-      } catch (error) {
-        console.log(
-          "DELETE STORY ERROR =>",
-          error.response?.data ||
-            error.message
-        );
+      console.log(
+        "DELETE STORY RESPONSE =>",
+        response.data
+      );
 
-        return rejectWithValue(
-          error.response?.data ||
-            error.message
-        );
-      }
+      return storyId;
+    } catch (error) {
+      console.log(
+        "DELETE STORY ERROR =>",
+        error.response?.data ||
+          error.message
+      );
+
+      return rejectWithValue(
+        error.response?.data ||
+          error.message
+      );
     }
-  );
+  }
+);
 
 // =====================================================
 // GET SINGLE STORY
 // =====================================================
 
-export const getStory =
-  createAsyncThunk(
-    "stories/getStory",
-    async (
-      storyId,
-      { rejectWithValue }
-    ) => {
-      try {
-        const response =
-          await api.get(
-            API_ENDPOINTS.stories.getStory(
-              storyId
-            )
-          );
-
-        return response.data;
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data ||
-            error.message
+export const getStory = createAsyncThunk(
+  "stories/getStory",
+  async (
+    storyId,
+    { rejectWithValue }
+  ) => {
+    try {
+      const response =
+        await api.get(
+          API_ENDPOINTS.stories.getStory(
+            storyId
+          )
         );
-      }
+
+      return response.data;
+    } catch (error) {
+      console.log(
+        "GET STORY ERROR =>",
+        error.response?.data ||
+          error.message
+      );
+
+      return rejectWithValue(
+        error.response?.data ||
+          error.message
+      );
     }
-  );
+  }
+);
 
 // =====================================================
 // GET STORY VIEWERS
@@ -248,14 +277,24 @@ export const getStoryViewers =
       try {
         const response =
           await api.get(
-            API_ENDPOINTS.stories
-              .getStoryViewers(
-                storyId
-              )
+            API_ENDPOINTS.stories.getStoryViewers(
+              storyId
+            )
           );
+
+        console.log(
+          "STORY VIEWERS RESPONSE =>",
+          response.data
+        );
 
         return response.data;
       } catch (error) {
+        console.log(
+          "GET STORY VIEWERS ERROR =>",
+          error.response?.data ||
+            error.message
+        );
+
         return rejectWithValue(
           error.response?.data ||
             error.message
@@ -268,34 +307,37 @@ export const getStoryViewers =
 // REACT TO STORY
 // =====================================================
 
-export const reactToStory =
-  createAsyncThunk(
-    "stories/reactToStory",
-    async (
-      { storyId, emoji },
-      { rejectWithValue }
-    ) => {
-      try {
-        const response =
-          await api.post(
-            API_ENDPOINTS.stories
-              .reactToStory(
-                storyId
-              ),
-            {
-              emoji,
-            }
-          );
+export const reactToStory = createAsyncThunk(
+  "stories/reactToStory",
+  async ({ storyId, emoji }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        API_ENDPOINTS.stories.reactToStory(storyId),
+        { emoji }
+      );
 
-        return response.data;
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data ||
-            error.message
-        );
-      }
+      console.log(
+        "STORY REACTION RESPONSE =>",
+        response.data
+      );
+
+      return {
+        storyId,
+        emoji,
+        ...response.data,
+      };
+    } catch (error) {
+      console.log(
+        "STORY REACTION ERROR =>",
+        error.response?.data || error.message
+      );
+
+      return rejectWithValue(
+        error.response?.data || error.message
+      );
     }
-  );
+  }
+);
 
 // =====================================================
 // REMOVE REACTION
@@ -311,10 +353,9 @@ export const removeStoryReaction =
       try {
         const response =
           await api.delete(
-            API_ENDPOINTS.stories
-              .removeStoryReaction(
-                storyId
-              )
+            API_ENDPOINTS.stories.removeStoryReaction(
+              storyId
+            )
           );
 
         return response.data;
@@ -341,10 +382,9 @@ export const getStoryReactions =
       try {
         const response =
           await api.get(
-            API_ENDPOINTS.stories
-              .getStoryReactions(
-                storyId
-              )
+            API_ENDPOINTS.stories.getStoryReactions(
+              storyId
+            )
           );
 
         return response.data;
@@ -369,19 +409,57 @@ export const replyToStory =
       { rejectWithValue }
     ) => {
       try {
+         console.log("====================================");
+      console.log("💬 REPLY TO STORY");
+      console.log("STORY ID =>", storyId);
+      console.log("CONTENT =>", content);
+      console.log(
+        "ENDPOINT =>",
+        API_ENDPOINTS.stories.replyToStory(storyId)
+      );
+      console.log("====================================");
+
         const response =
           await api.post(
-            API_ENDPOINTS.stories
-              .replyToStory(
-                storyId
-              ),
+            API_ENDPOINTS.stories.replyToStory(
+              storyId
+            ),
             {
               content,
             }
           );
+           console.log("====================================");
+      console.log("✅ STORY REPLY SUCCESS");
+      console.log("STATUS =>", response.status);
+      console.log("RESPONSE =>", response.data);
+      console.log("MESSAGE ID =>", response.data?.id);
+      console.log(
+        "CONVERSATION ID =>",
+        response.data?.conversation_id
+      );
+      console.log(
+        "REPLY TO STORY ID =>",
+        response.data?.reply_to_story_id
+      );
+      console.log("====================================");
 
         return response.data;
       } catch (error) {
+        console.log("====================================");
+      console.log("❌ STORY REPLY ERROR");
+      console.log(
+        "STATUS =>",
+        error.response?.status
+      );
+      console.log(
+        "DATA =>",
+        error.response?.data
+      );
+      console.log(
+        "MESSAGE =>",
+        error.message
+      );
+      console.log("====================================");
         return rejectWithValue(
           error.response?.data ||
             error.message
@@ -400,10 +478,12 @@ const initialState = {
   storyDetails: null,
   viewers: [],
   reactions: [],
+
   loading: false,
   creating: false,
   deleting: false,
   viewing: false,
+
   error: null,
 };
 
@@ -437,7 +517,13 @@ const storySlice = createSlice({
         getStoryFeed.fulfilled,
         (state, action) => {
           state.loading = false;
-          state.feed = action.payload;
+
+          state.feed =
+            Array.isArray(
+              action.payload
+            )
+              ? action.payload
+              : [];
         }
       )
 
@@ -445,6 +531,7 @@ const storySlice = createSlice({
         getStoryFeed.rejected,
         (state, action) => {
           state.loading = false;
+
           state.error =
             action.payload;
         }
@@ -455,32 +542,49 @@ const storySlice = createSlice({
       // =================================================
 
       .addCase(
+        getMyStories.pending,
+        (state) => {
+          state.error = null;
+        }
+      )
+
+      .addCase(
         getMyStories.fulfilled,
         (state, action) => {
+          const payload =
+            action.payload;
+
           if (
-            Array.isArray(
-              action.payload
-            )
+            Array.isArray(payload)
           ) {
             state.myStories =
-              action.payload;
+              payload;
           } else if (
             Array.isArray(
-              action.payload?.stories
+              payload?.stories
             )
           ) {
             state.myStories =
-              action.payload.stories;
+              payload.stories;
           } else if (
             Array.isArray(
-              action.payload?.items
+              payload?.items
             )
           ) {
             state.myStories =
-              action.payload.items;
+              payload.items;
           } else {
             state.myStories = [];
           }
+        }
+      )
+
+      .addCase(
+        getMyStories.rejected,
+        (state, action) => {
+          state.myStories = [];
+          state.error =
+            action.payload;
         }
       )
 
@@ -516,19 +620,26 @@ const storySlice = createSlice({
             newStory
           );
 
-          // Update current user's
-          // story group in feed
+          // ---------------------------------------------
+          // Update current user's story group
+          // ---------------------------------------------
+
+          const newStoryUserId =
+            newStory?.user_id ??
+            newStory?.user?.id;
 
           const existingUser =
             state.feed.find(
               (item) =>
-                item.user?.id ===
-                newStory.user_id
+                String(
+                  item?.user?.id
+                ) ===
+                String(
+                  newStoryUserId
+                )
             );
 
-          if (
-            existingUser
-          ) {
+          if (existingUser) {
             if (
               !Array.isArray(
                 existingUser.stories
@@ -552,6 +663,7 @@ const storySlice = createSlice({
         createStory.rejected,
         (state, action) => {
           state.creating = false;
+
           state.error =
             action.payload;
         }
@@ -574,13 +686,20 @@ const storySlice = createSlice({
           state.viewing = false;
 
           const storyId =
-            action.payload.storyId;
+            action.payload?.storyId;
+
+          const serverViewsCount =
+            action.payload?.views_count;
+
+          // ---------------------------------------------
+          // Update feed story
+          // ---------------------------------------------
 
           state.feed.forEach(
             (user) => {
               if (
                 !Array.isArray(
-                  user.stories
+                  user?.stories
                 )
               ) {
                 return;
@@ -589,11 +708,21 @@ const storySlice = createSlice({
               user.stories.forEach(
                 (story) => {
                   if (
-                    story.id ===
-                    storyId
+                    String(
+                      story?.id
+                    ) ===
+                    String(storyId)
                   ) {
                     story.viewed_by_me =
                       true;
+
+                    if (
+                      typeof serverViewsCount ===
+                      "number"
+                    ) {
+                      story.views_count =
+                        serverViewsCount;
+                    }
                   }
                 }
               );
@@ -601,18 +730,33 @@ const storySlice = createSlice({
               user.has_unseen =
                 user.stories.some(
                   (story) =>
-                    !story.viewed_by_me
+                    !story?.viewed_by_me
                 );
             }
           );
 
+          // ---------------------------------------------
+          // Update my stories
+          // ---------------------------------------------
+
           state.myStories.forEach(
             (story) => {
               if (
-                story.id === storyId
+                String(
+                  story?.id
+                ) ===
+                String(storyId)
               ) {
                 story.viewed_by_me =
                   true;
+
+                if (
+                  typeof serverViewsCount ===
+                  "number"
+                ) {
+                  story.views_count =
+                    serverViewsCount;
+                }
               }
             }
           );
@@ -623,6 +767,7 @@ const storySlice = createSlice({
         viewStory.rejected,
         (state, action) => {
           state.viewing = false;
+
           state.error =
             action.payload;
         }
@@ -648,22 +793,29 @@ const storySlice = createSlice({
           const storyId =
             action.payload;
 
+          // ---------------------------------------------
           // Remove from my stories
+          // ---------------------------------------------
 
           state.myStories =
             state.myStories.filter(
               (story) =>
-                story.id !== storyId
+                String(
+                  story?.id
+                ) !==
+                String(storyId)
             );
 
+          // ---------------------------------------------
           // Remove from feed
+          // ---------------------------------------------
 
           state.feed =
             state.feed
               .map((user) => {
                 if (
                   !Array.isArray(
-                    user.stories
+                    user?.stories
                   )
                 ) {
                   return user;
@@ -672,22 +824,34 @@ const storySlice = createSlice({
                 user.stories =
                   user.stories.filter(
                     (story) =>
-                      story.id !==
-                      storyId
+                      String(
+                        story?.id
+                      ) !==
+                      String(storyId)
                   );
 
                 user.has_unseen =
                   user.stories.some(
                     (story) =>
-                      !story.viewed_by_me
+                      !story?.viewed_by_me
                   );
 
                 return user;
               })
               .filter(
                 (user) =>
-                  user.stories?.length
+                  Array.isArray(
+                    user?.stories
+                  ) &&
+                  user.stories.length >
+                    0
               );
+
+          // ---------------------------------------------
+          // Clear viewers
+          // ---------------------------------------------
+
+          state.viewers = [];
         }
       )
 
@@ -695,8 +859,237 @@ const storySlice = createSlice({
         deleteStory.rejected,
         (state, action) => {
           state.deleting = false;
+
           state.error =
             action.payload;
+        }
+      )
+
+      // =================================================
+      // VIEWERS
+      // =================================================
+
+      .addCase(
+        getStoryViewers.pending,
+        (state) => {
+          state.error = null;
+        }
+      )
+
+      .addCase(
+        getStoryViewers.fulfilled,
+        (state, action) => {
+          const payload =
+            action.payload;
+
+          if (
+            Array.isArray(payload)
+          ) {
+            state.viewers =
+              payload;
+          } else if (
+            Array.isArray(
+              payload?.viewers
+            )
+          ) {
+            state.viewers =
+              payload.viewers;
+          } else if (
+            Array.isArray(
+              payload?.items
+            )
+          ) {
+            state.viewers =
+              payload.items;
+          } else {
+            state.viewers = [];
+          }
+        }
+      )
+
+      .addCase(
+        getStoryViewers.rejected,
+        (state, action) => {
+          state.viewers = [];
+
+          state.error =
+            action.payload;
+        }
+      )
+
+      // =================================================
+      // REACTIONS
+      // =================================================
+
+      .addCase(
+  reactToStory.fulfilled,
+  (state, action) => {
+    const storyId =
+      action.payload?.storyId;
+
+    const emoji =
+      action.payload?.emoji;
+
+    const reactionsCount =
+      action.payload?.reactions_count;
+
+    // ---------------------------------------------
+    // UPDATE FEED
+    // ---------------------------------------------
+
+    state.feed.forEach((userGroup) => {
+      if (!Array.isArray(userGroup?.stories)) {
+        return;
+      }
+
+      userGroup.stories.forEach((story) => {
+        if (
+          String(story?.id) ===
+          String(storyId)
+        ) {
+          story.my_reaction = emoji;
+
+          if (
+            typeof reactionsCount === "number"
+          ) {
+            story.reactions_count =
+              reactionsCount;
+          } else {
+            story.reactions_count =
+              (story.reactions_count || 0) + 1;
+          }
+        }
+      });
+    });
+
+    // ---------------------------------------------
+    // UPDATE MY STORIES
+    // ---------------------------------------------
+
+    state.myStories.forEach((story) => {
+      if (
+        String(story?.id) ===
+        String(storyId)
+      ) {
+        story.my_reaction = emoji;
+
+        if (
+          typeof reactionsCount === "number"
+        ) {
+          story.reactions_count =
+            reactionsCount;
+        } else {
+          story.reactions_count =
+            (story.reactions_count || 0) + 1;
+        }
+      }
+    });
+
+    console.log(
+      "✅ STORY REACTION UPDATED",
+      {
+        storyId,
+        emoji,
+        reactionsCount,
+      }
+    );
+  }
+)
+
+.addCase(
+  removeStoryReaction.fulfilled,
+  (state, action) => {
+    const storyId =
+      action.meta.arg;
+
+    const reactionsCount =
+      action.payload?.reactions_count;
+
+    state.feed.forEach((userGroup) => {
+      if (!Array.isArray(userGroup?.stories)) {
+        return;
+      }
+
+      userGroup.stories.forEach((story) => {
+        if (
+          String(story?.id) ===
+          String(storyId)
+        ) {
+          story.my_reaction = null;
+
+          if (
+            typeof reactionsCount === "number"
+          ) {
+            story.reactions_count =
+              reactionsCount;
+          } else {
+            story.reactions_count =
+              Math.max(
+                0,
+                (story.reactions_count || 0) - 1
+              );
+          }
+        }
+      });
+    });
+
+    state.myStories.forEach((story) => {
+      if (
+        String(story?.id) ===
+        String(storyId)
+      ) {
+        story.my_reaction = null;
+
+        if (
+          typeof reactionsCount === "number"
+        ) {
+          story.reactions_count =
+            reactionsCount;
+        } else {
+          story.reactions_count =
+            Math.max(
+              0,
+              (story.reactions_count || 0) - 1
+            );
+        }
+      }
+    });
+
+    console.log(
+      "✅ STORY REACTION REMOVED",
+      storyId
+    );
+  }
+)
+
+      .addCase(
+        getStoryReactions.fulfilled,
+        (state, action) => {
+          const payload =
+            action.payload;
+
+          if (
+            Array.isArray(payload)
+          ) {
+            state.reactions =
+              payload;
+          } else if (
+            Array.isArray(
+              payload?.items
+            )
+          ) {
+            state.reactions =
+              payload.items;
+          } else if (
+            Array.isArray(
+              payload?.reactions
+            )
+          ) {
+            state.reactions =
+              payload.reactions;
+          } else {
+            state.reactions = [];
+          }
         }
       );
   },

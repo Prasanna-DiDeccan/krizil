@@ -10,7 +10,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import { useRouter } from "expo-router";
-import Toast from "react-native-toast-message";
+// import Toast from "react-native-toast-message";
+import Toast from "react-native-root-toast";
 import { forgotPassword } from "../../src/redux/authSlice";
 import { Colors } from "../../src/theme/colors";
 

@@ -11,6 +11,7 @@
       "package": "com.krizil.app",
       "googleServicesFile": "./google-services.json",
       "jsEngine": "hermes",
+      "usesCleartextTraffic": true,
 
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",

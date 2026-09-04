@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { API_ENDPOINTS as apiList } from "../config/apiEndpoints";
 import api, {
   authApi,
+  BASE_URL,
 } from "../utils/api";
 
 import {
@@ -151,58 +152,250 @@ export const resendOtp =
     }
   );
 
-export const loginUser =
-  createAsyncThunk(
-    "auth/login",
+// export const loginUser =
+//   createAsyncThunk(
+//     "auth/login",
 
-    async (
-      data,
-      { rejectWithValue }
-    ) => {
-      try {
-        const response =
-          await authApi.post(
-            apiList.auth.login,
-            data
-          );
+//     async (
+//       data,
+//       { rejectWithValue }
+//     ) => {
+//       console.log("========== LOGIN START ==========");
 
-        const result =
-          response.data;
+// console.log("BASE_URL =>", BASE_URL);
+// console.log("LOGIN URL =>", `${BASE_URL}/api/auth/login`);
+// console.log("LOGIN DATA =>", loginData);
+//       try {
+        
+//         const response =
+//           await authApi.post(
+//             apiList.auth.login,
+//             data
+//           );
 
-        console.log(
-          "LOGIN RESPONSE =>",
-          result
-        );
+//         const result =
+//           response.data;
+
+//         console.log(
+//           "LOGIN RESPONSE =>",
+//           result
+//         );
         
 
-        // Save tokens
+//         // Save tokens
+//         await saveTokens(
+//           result.access_token,
+//           result.refresh_token
+//         );
+//         const storedRefreshToken = await getRefreshToken();
+
+// console.log(
+//   "STORED REFRESH TOKEN =>",
+//   storedRefreshToken
+// );
+
+//         // Save user
+//         if (result.user) {
+//           await saveUser(
+//             result.user
+//           );
+//         }
+//          console.log("LOGIN STATUS =>", response.status);
+//   console.log("LOGIN RESPONSE =>", response.data);
+
+//         return result;
+//       } catch (error) {
+//       console.log("========== LOGIN FAILED ==========");
+//   console.log("ERROR MESSAGE =>", error.message);
+//   console.log("ERROR CODE =>", error.code);
+//   console.log("ERROR RESPONSE =>", error.response?.data);
+//   console.log("ERROR STATUS =>", error.response?.status);
+//   console.log("ERROR CONFIG URL =>", error.config?.url);
+//   console.log("ERROR CONFIG BASEURL =>", error.config?.baseURL);
+//         return rejectWithValue(
+//           error.response?.data ||
+//             error.message
+//         );
+//       }
+//     }
+//   );
+// export const loginUser = createAsyncThunk(
+//   "auth/login",
+
+//   async (data, { rejectWithValue }) => {
+
+//     console.log("========== LOGIN START ==========");
+//     console.log("BASE_URL =>", BASE_URL);
+//     console.log(
+//       "LOGIN URL =>",
+//       `${BASE_URL}${apiList.auth.login}`
+//     );
+//     console.log("LOGIN DATA =>", data);
+
+//     try {
+//       const response = await authApi.post(
+//         apiList.auth.login,
+//         data
+//       );
+
+//       console.log("LOGIN STATUS =>", response.status);
+//       console.log("LOGIN RESPONSE =>", response.data);
+
+//       const result = response.data;
+
+//       await saveTokens(
+//         result.access_token,
+//         result.refresh_token
+//       );
+
+//       const storedRefreshToken =
+//         await getRefreshToken();
+
+//       console.log(
+//         "STORED REFRESH TOKEN =>",
+//         storedRefreshToken
+//       );
+
+//       if (result.user) {
+//         await saveUser(result.user);
+//       }
+
+//       return result;
+
+//     } catch (error) {
+
+//       console.log("========== LOGIN FAILED ==========");
+//       console.log("ERROR MESSAGE =>", error.message);
+//       console.log("ERROR CODE =>", error.code);
+//       console.log("ERROR RESPONSE =>", error.response?.data);
+//       console.log("ERROR STATUS =>", error.response?.status);
+//       console.log(
+//         "ERROR CONFIG URL =>",
+//         error.config?.url
+//       );
+//       console.log(
+//         "ERROR CONFIG BASEURL =>",
+//         error.config?.baseURL
+//       );
+
+//       return rejectWithValue(
+//         error.response?.data || error.message
+//       );
+//     }
+//   }
+// );
+
+export const loginUser = createAsyncThunk(
+  "auth/login",
+
+  async (data, { rejectWithValue }) => {
+    console.log("========== LOGIN START ==========");
+    console.log("BASE_URL =>", BASE_URL);
+    console.log(
+      "LOGIN URL =>",
+      `${BASE_URL}${apiList.auth.login}`
+    );
+    console.log("LOGIN DATA =>", data);
+
+    try {
+      const response = await authApi.post(
+        apiList.auth.login,
+        data
+      );
+
+      console.log("LOGIN STATUS =>", response.status);
+      console.log("LOGIN RESPONSE =>", response.data);
+
+      const result = response.data;
+
+      if (
+        result?.access_token &&
+        result?.refresh_token
+      ) {
         await saveTokens(
           result.access_token,
           result.refresh_token
         );
-        const storedRefreshToken = await getRefreshToken();
 
-console.log(
-  "STORED REFRESH TOKEN =>",
-  storedRefreshToken
-);
+        console.log("TOKENS SAVED");
 
-        // Save user
-        if (result.user) {
-          await saveUser(
-            result.user
-          );
-        }
+        const storedRefreshToken =
+          await getRefreshToken();
 
-        return result;
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data ||
-            error.message
+        console.log(
+          "STORED REFRESH TOKEN =>",
+          storedRefreshToken
         );
       }
+
+      if (result?.user) {
+        await saveUser(result.user);
+
+        console.log(
+          "USER SAVED =>",
+          result.user
+        );
+      }
+
+      return result;
+
+    } catch (error) {
+      console.log(
+        "========== LOGIN FAILED =========="
+      );
+
+      console.log(
+        "ERROR MESSAGE =>",
+        error?.message
+      );
+
+      console.log(
+        "ERROR CODE =>",
+        error?.code
+      );
+
+      console.log(
+        "ERROR RESPONSE =>",
+        error?.response?.data
+      );
+
+      console.log(
+        "ERROR STATUS =>",
+        error?.response?.status
+      );
+
+      console.log(
+        "ERROR CONFIG URL =>",
+        error?.config?.url
+      );
+
+      console.log(
+        "ERROR CONFIG BASEURL =>",
+        error?.config?.baseURL
+      );
+
+      /*
+       * Do NOT create our own error message.
+       *
+       * Whatever backend returned is passed
+       * directly to the LoginScreen.
+       */
+
+      if (error?.response?.data !== undefined) {
+        return rejectWithValue(
+          error.response.data
+        );
+      }
+
+      /*
+       * Axios/network error itself.
+       * No fake fallback message.
+       */
+
+      return rejectWithValue(error);
     }
-  );
+  }
+);
 
 export const forgotPassword =
   createAsyncThunk(
@@ -329,6 +522,7 @@ const authSlice = createSlice({
   name: "auth",
 
   initialState: {
+    user: null,
     signupData: {
       username: "",
       identifier: "",
@@ -366,6 +560,24 @@ const authSlice = createSlice({
         gender: "",
       };
     },
+        // ================================================
+    // SET CURRENT USER
+    // ================================================
+
+    setUser: (
+      state,
+      action
+    ) => {
+
+      state.user =
+        action.payload;
+
+      console.log(
+        "REDUX USER SET =>",
+        state.user
+      );
+    },
+  
   },
 
   extraReducers: (builder) => {
@@ -394,6 +606,7 @@ const authSlice = createSlice({
       )
       .addCase(registerUser.pending, (state) => {
   state.loading = true;
+  state.error = null;
 })
 
 .addCase(registerUser.fulfilled, (state, action) => {
@@ -407,11 +620,28 @@ const authSlice = createSlice({
 })
 .addCase(verifyOtp.pending, (state) => {
   state.loading = true;
+  state.error = null;
 })
 
 .addCase(verifyOtp.fulfilled, (state, action) => {
   state.loading = false;
   state.verifyOtpData = action.payload;
+
+   // ==========================================
+          // SAVE USER TO REDUX
+          // ==========================================
+
+          if (
+            action.payload?.user
+          ) {
+            state.user =
+              action.payload.user;
+
+            console.log(
+              "VERIFY OTP USER STORED IN REDUX =>",
+              state.user
+            );
+          }
 
   console.log(
     "VERIFY OTP STORED =>",
@@ -426,6 +656,7 @@ const authSlice = createSlice({
 
 .addCase(resendOtp.pending, (state) => {
   state.loading = true;
+  state.error = null;
 })
 
 .addCase(resendOtp.fulfilled, (state, action) => {
@@ -440,11 +671,32 @@ const authSlice = createSlice({
 
 .addCase(loginUser.pending, (state) => {
   state.loading = true;
+  state.error = null;
 })
 
 .addCase(loginUser.fulfilled, (state, action) => {
   state.loading = false;
   state.loginData = action.payload;
+    // ==========================================
+          // SAVE CURRENT USER TO REDUX
+          // ==========================================
+
+          if (
+            action.payload?.user
+          ) {
+            state.user =
+              action.payload.user;
+
+            console.log(
+              "LOGIN USER STORED IN REDUX =>",
+              state.user
+            );
+
+            console.log(
+              "CURRENT USER ID =>",
+              state.user?.id
+            );
+          }
     console.log(
     "LOGIN STORED =>",
     JSON.stringify(action.payload, null, 2)
@@ -458,6 +710,7 @@ const authSlice = createSlice({
 
 .addCase(forgotPassword.pending, (state) => {
   state.loading = true;
+  state.error = null;
 })
 
 .addCase(forgotPassword.fulfilled, (state, action) => {
@@ -472,6 +725,7 @@ const authSlice = createSlice({
 
 .addCase(resetPassword.pending, (state) => {
   state.loading = true;
+  state.error = null;
 })
 
 .addCase(resetPassword.fulfilled, (state, action) => {
@@ -496,6 +750,7 @@ const authSlice = createSlice({
   logout.fulfilled,
   (state) => {
     state.loading = false;
+    state.user = null;
 
     state.signupData = {
       username: "",
@@ -520,7 +775,7 @@ const authSlice = createSlice({
   logout.rejected,
   (state, action) => {
     state.loading = false;
-
+    state.user = null;
     // Session is already cleared by thunk
     state.signupData = {
       username: "",
@@ -547,6 +802,7 @@ const authSlice = createSlice({
 export const {
   setSignupData,
   clearSignupData,
+  setUser,
 } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -31,11 +31,18 @@ import {
 } from "react-redux";
 
 import {
-  likeReel,
-  unlikeReel,
   saveReel,
   unsaveReel,
 } from "../../../redux/reelsSlice";
+
+import {
+  likeTarget,
+  unlikeTarget,
+} from "../../../redux/likeSlice";
+
+import LikesSheet from "../../likes/LikesSheet";
+
+import CommentsSheet from "../../comments/CommentsSheet";
 
 import { BASE_URL } from "../../../utils/api";
 
@@ -82,25 +89,78 @@ export default function HomeReel({
   const dispatch = useDispatch();
 
   // ====================================================
-  // REDUX
+  // LIKES SHEET
+  // ====================================================
+
+  const [
+    likesVisible,
+    setLikesVisible,
+  ] = useState(false);
+
+  // ====================================================
+  // COMMENTS SHEET
+  // ====================================================
+
+  const [
+    commentsVisible,
+    setCommentsVisible,
+  ] = useState(false);
+
+  // ====================================================
+  // REEL ID
+  // ====================================================
+
+  const reelId = item?.id;
+
+  // ====================================================
+  // COMMON LIKE REDUX STATE
+  // ====================================================
+
+  const likeKey = reelId
+    ? `reel_${reelId}`
+    : null;
+
+  const likeState = useSelector(
+    (state) =>
+      likeKey
+        ? state.likes?.likes?.[likeKey]
+        : null
+  );
+
+  // ====================================================
+  // SAVE STATE
   // ====================================================
 
   const saving = useSelector(
     (state) =>
       state.reels?.savingReelIds?.includes(
-        item?.id
+        reelId
       )
   );
 
   const unsaving = useSelector(
     (state) =>
       state.reels?.unsavingReelIds?.includes(
-        item?.id
+        reelId
       )
   );
 
   // ====================================================
-  // STATE
+  // LIKE DISPLAY
+  // ====================================================
+
+  const isLiked =
+    likeState?.isLiked ??
+    item?.is_liked ??
+    false;
+
+  const likesCount =
+    likeState?.count ??
+    item?.likes_count ??
+    0;
+
+  // ====================================================
+  // VIDEO STATE
   // ====================================================
 
   const [
@@ -157,7 +217,7 @@ export default function HomeReel({
         (event) => {
           console.log(
             "🎥 HOME REEL STATUS =>",
-            item?.id,
+            reelId,
             event?.status,
             event?.error
           );
@@ -197,7 +257,7 @@ export default function HomeReel({
     };
   }, [
     player,
-    item?.id,
+    reelId,
   ]);
 
   // ====================================================
@@ -233,7 +293,7 @@ export default function HomeReel({
   ]);
 
   // ====================================================
-  // RESET
+  // RESET VIDEO
   // ====================================================
 
   useEffect(() => {
@@ -267,33 +327,52 @@ export default function HomeReel({
 
   const handleLike =
     useCallback(() => {
-      if (!item?.id) {
+      if (!reelId) {
+        console.log(
+          "❌ REEL ID MISSING FOR LIKE"
+        );
+
         return;
       }
 
-      if (item?.is_liked) {
-        if (!item?.like_id) {
-          return;
-        }
+      console.log(
+        "❤️ REEL LIKE CLICK =>",
+        reelId,
+        "currently liked:",
+        isLiked
+      );
+
+      if (isLiked) {
+        console.log(
+          "💔 UNLIKE REEL =>",
+          reelId
+        );
 
         dispatch(
-          unlikeReel({
-            reelId: item.id,
-            likeId: item.like_id,
+          unlikeTarget({
+            targetType: "reel",
+            targetId: reelId,
           })
         );
 
         return;
       }
 
+      console.log(
+        "❤️ LIKE REEL =>",
+        reelId
+      );
+
       dispatch(
-        likeReel(item.id)
+        likeTarget({
+          targetType: "reel",
+          targetId: reelId,
+        })
       );
     }, [
       dispatch,
-      item?.id,
-      item?.is_liked,
-      item?.like_id,
+      reelId,
+      isLiked,
     ]);
 
   // ====================================================
@@ -302,54 +381,76 @@ export default function HomeReel({
 
   const handleSave =
     useCallback(() => {
-      if (!item?.id) {
+      if (!reelId) {
         return;
       }
 
       if (item?.is_saved) {
         dispatch(
-          unsaveReel(item.id)
+          unsaveReel(reelId)
         );
 
         return;
       }
 
       dispatch(
-        saveReel(item.id)
+        saveReel(reelId)
       );
     }, [
       dispatch,
-      item?.id,
+      reelId,
       item?.is_saved,
     ]);
 
   // ====================================================
-  // API RESPONSE USER DATA
+  // OPEN COMMENTS
   // ====================================================
-  //
-  // DO NOT use:
-  //
-  // item.user
-  // item.username
-  // currentUsername
-  // Redux profile
-  // currentUser fallback
-  //
-  // API response already gives:
-  //
-  // item.author.username
-  // item.author.full_name
-  // item.author.avatar_url
-  //
+
+  const handleOpenComments =
+    useCallback(() => {
+      console.log(
+        "💬 HOME REEL COMMENT CLICKED =>",
+        reelId
+      );
+
+      if (!reelId) {
+        return;
+      }
+
+      setCommentsVisible(true);
+
+      if (onCommentPress) {
+        onCommentPress(item);
+      }
+    }, [
+      reelId,
+      item,
+      onCommentPress,
+    ]);
+
+  // ====================================================
+  // CLOSE COMMENTS
+  // ====================================================
+
+  const handleCloseComments =
+    useCallback(() => {
+      setCommentsVisible(false);
+    }, []);
+
+  // ====================================================
+  // USER
   // ====================================================
 
   const username =
-    item?.author?.username ||
+    item?.user?.username ||
+    item?.username ||
     "User";
 
   const avatarUrl =
     getMediaUrl(
-      item?.author?.avatar_url
+      item?.user?.avatar_url ||
+        item?.author?.avatar ||
+        item?.avatar_url
     );
 
   // ====================================================
@@ -378,21 +479,18 @@ export default function HomeReel({
     <View
       style={styles.container}
     >
-
-      {/* ================================================
+      {/* =================================================
           HEADER
       ================================================= */}
 
       <View
         style={styles.header}
       >
-
         <View
           style={
             styles.userContainer
           }
         >
-
           {avatarUrl ? (
             <Image
               source={{
@@ -424,34 +522,48 @@ export default function HomeReel({
           >
             {username}
           </Text>
-
         </View>
 
-        {/* ==============================================
-            MENU
-        =============================================== */}
+        {/* =================================================
+            REEL ELLIPSIS MENU
+        ================================================= */}
 
         <Pressable
-          onPress={() =>
-            onMenuPress?.(
-              item
-            )
-          }
-          hitSlop={12}
+          onPress={() => {
+            console.log(
+              "⋯ REEL ELLIPSIS PRESSED =>",
+              reelId
+            );
+
+            if (!reelId) {
+              console.log(
+                "❌ CANNOT OPEN REEL MENU - ID MISSING"
+              );
+
+              return;
+            }
+
+            onMenuPress?.(item);
+          }}
+          hitSlop={{
+            top: 15,
+            bottom: 15,
+            left: 15,
+            right: 15,
+          }}
           style={
             styles.menuButton
           }
         >
           <Ionicons
             name="ellipsis-horizontal"
-            size={22}
+            size={24}
             color="#fff"
           />
         </Pressable>
-
       </View>
 
-      {/* ================================================
+      {/* =================================================
           VIDEO
       ================================================= */}
 
@@ -463,7 +575,6 @@ export default function HomeReel({
           handleVideoPress
         }
       >
-
         <VideoView
           player={player}
           style={styles.video}
@@ -530,23 +641,20 @@ export default function HomeReel({
               />
             </View>
           )}
-
       </Pressable>
 
-      {/* ================================================
+      {/* =================================================
           ACTIONS
       ================================================= */}
 
       <View
         style={styles.actionRow}
       >
-
         <View
           style={
             styles.leftActions
           }
         >
-
           {/* LIKE */}
 
           <Pressable
@@ -560,39 +668,46 @@ export default function HomeReel({
           >
             <Ionicons
               name={
-                item?.is_liked
+                isLiked
                   ? "heart"
                   : "heart-outline"
               }
               size={27}
               color={
-                item?.is_liked
+                isLiked
                   ? "#FF3158"
                   : "#fff"
               }
             />
           </Pressable>
 
-          <Text
-            style={
-              styles.countText
-            }
-          >
-            {item?.likes_count ?? 0}
-          </Text>
-
-          {/* COMMENT */}
+          {/* LIKE COUNT */}
 
           <Pressable
             onPress={() =>
-              onCommentPress?.(
-                item
-              )
+              setLikesVisible(true)
+            }
+            hitSlop={8}
+          >
+            <Text
+              style={
+                styles.countText
+              }
+            >
+              {likesCount}
+            </Text>
+          </Pressable>
+
+          {/* COMMENTS */}
+
+          <Pressable
+            onPress={
+              handleOpenComments
             }
             style={
               styles.actionButton
             }
-            hitSlop={8}
+            hitSlop={12}
           >
             <Ionicons
               name="chatbubble-outline"
@@ -600,6 +715,17 @@ export default function HomeReel({
               color="#fff"
             />
           </Pressable>
+
+          {/* COMMENT COUNT */}
+
+          <Text
+            style={
+              styles.countText
+            }
+          >
+            {item?.comments_count ??
+              0}
+          </Text>
 
           {/* SHARE */}
 
@@ -620,7 +746,6 @@ export default function HomeReel({
               color="#fff"
             />
           </Pressable>
-
         </View>
 
         {/* SAVE */}
@@ -644,10 +769,9 @@ export default function HomeReel({
             color="#fff"
           />
         </Pressable>
-
       </View>
 
-      {/* ================================================
+      {/* =================================================
           CAPTION
       ================================================= */}
 
@@ -674,7 +798,7 @@ export default function HomeReel({
         </View>
       )}
 
-      {/* ================================================
+      {/* =================================================
           DATE
       ================================================= */}
 
@@ -696,6 +820,33 @@ export default function HomeReel({
         </View>
       )}
 
+      {/* =================================================
+          COMMENTS SHEET
+      ================================================= */}
+
+      <CommentsSheet
+        visible={
+          commentsVisible
+        }
+        reelId={reelId}
+        onClose={
+          handleCloseComments
+        }
+      />
+
+      {/* =================================================
+          LIKES SHEET
+      ================================================= */}
+
+      <LikesSheet
+        visible={
+          likesVisible
+        }
+        reelId={reelId}
+        onClose={() =>
+          setLikesVisible(false)
+        }
+      />
     </View>
   );
 }
@@ -715,11 +866,8 @@ const styles = StyleSheet.create({
   header: {
     minHeight: 58,
     paddingHorizontal: 14,
-
     flexDirection: "row",
-
     alignItems: "center",
-
     justifyContent:
       "space-between",
   },
@@ -742,9 +890,7 @@ const styles = StyleSheet.create({
     height: 38,
     borderRadius: 19,
     marginRight: 10,
-
     backgroundColor: "#24242D",
-
     justifyContent: "center",
     alignItems: "center",
   },
@@ -757,9 +903,8 @@ const styles = StyleSheet.create({
   },
 
   menuButton: {
-    width: 40,
-    height: 40,
-
+    width: 44,
+    height: 44,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -767,11 +912,8 @@ const styles = StyleSheet.create({
   videoContainer: {
     width: "100%",
     aspectRatio: 1,
-
     backgroundColor: "#000",
-
     position: "relative",
-
     overflow: "hidden",
   },
 
@@ -782,20 +924,16 @@ const styles = StyleSheet.create({
 
   videoLoader: {
     ...StyleSheet.absoluteFillObject,
-
     justifyContent: "center",
     alignItems: "center",
-
     backgroundColor:
       "rgba(0,0,0,0.15)",
   },
 
   videoError: {
     ...StyleSheet.absoluteFillObject,
-
     justifyContent: "center",
     alignItems: "center",
-
     backgroundColor: "#111",
   },
 
@@ -828,13 +966,9 @@ const styles = StyleSheet.create({
 
   actionRow: {
     minHeight: 52,
-
     paddingHorizontal: 14,
-
     flexDirection: "row",
-
     alignItems: "center",
-
     justifyContent:
       "space-between",
   },
@@ -851,7 +985,6 @@ const styles = StyleSheet.create({
   countText: {
     color: "#fff",
     fontSize: 14,
-
     marginRight: 16,
     marginLeft: -8,
   },

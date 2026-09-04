@@ -551,7 +551,7 @@ export default function ReelsGrid() {
 
         {/* THREE DOT */}
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={
             styles.deleteButton
           }
@@ -569,7 +569,7 @@ export default function ReelsGrid() {
             size={20}
             color="#fff"
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
       </TouchableOpacity>
     );

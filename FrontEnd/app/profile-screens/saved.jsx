@@ -15,13 +15,9 @@ import {
   Dimensions,
 } from "react-native";
 
-import {
-  Ionicons,
-} from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
-import {
-  router,
-} from "expo-router";
+import { router } from "expo-router";
 
 import {
   useDispatch,
@@ -29,34 +25,21 @@ import {
 } from "react-redux";
 
 import {
-  getSavedPosts,
-  getSavedReels,
+  getSavedItems,
 } from "../../src/redux/savedSlice";
-
-import {
-  getUser,
-} from "../../src/utils/storage";
 
 import {
   BASE_URL,
 } from "../../src/utils/api";
 
-// ======================================================
-// SCREEN
-// ======================================================
+import ScreenLayout from "../../src/components/ScreenLayout";
 
-const {
-  width,
-} = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const GRID_GAP = 2;
 
 const ITEM_WIDTH =
   (width - GRID_GAP * 2) / 3;
-
-// ======================================================
-// FILTERS
-// ======================================================
 
 const FILTERS = [
   {
@@ -85,249 +68,139 @@ const FILTERS = [
   },
 ];
 
-// ======================================================
-// SCREEN
-// ======================================================
-
 export default function Saved() {
   const dispatch = useDispatch();
 
-  const [
-    userId,
-    setUserId,
-  ] = useState(null);
-
-  const [
-    activeFilter,
-    setActiveFilter,
-  ] = useState("all");
-
-  // ====================================================
-  // REDUX
-  // ====================================================
+  const [activeFilter, setActiveFilter] =
+    useState("all");
 
   const {
+    savedItems = [],
     savedPosts = [],
     savedReels = [],
-
-    loading,
-    loadingSavedReels,
-
-    error,
-    savedReelsError,
+    loading = false,
+    error = null,
   } = useSelector(
-    (state) => state.saved
+    (state) => state.saved || {}
   );
 
-  // ====================================================
-  // LOAD USER
-  // ====================================================
-
   useEffect(() => {
-    const loadUser =
-      async () => {
-        try {
-          const user =
-            await getUser();
-
-          console.log(
-            "SAVED SCREEN USER =>",
-            user
-          );
-
-          if (user?.id) {
-            setUserId(user.id);
-          }
-        } catch (error) {
-          console.log(
-            "GET USER ERROR =>",
-            error
-          );
-        }
-      };
-
-    loadUser();
-  }, []);
-
-  // ====================================================
-  // LOAD SAVED POSTS + REELS
-  // ====================================================
-
-  useEffect(() => {
-    if (!userId) {
-      return;
-    }
-
     console.log(
       "======================================"
     );
 
     console.log(
-      "LOADING SAVED CONTENT"
+      "LOADING SAVED ITEMS"
     );
 
     console.log(
-      "USER ID =>",
-      userId
+      "GET => /api/saved"
     );
 
     console.log(
       "======================================"
     );
 
-    // POSTS
-
     dispatch(
-      getSavedPosts({
-        userId,
+      getSavedItems({
         limit: 100,
         offset: 0,
       })
     );
+  }, [dispatch]);
 
-    // REELS
+  const getMediaUrl = (mediaUrl) => {
+    if (!mediaUrl) return null;
 
-    dispatch(
-      getSavedReels({
-        userId,
-        limit: 100,
-        offset: 0,
-      })
-    );
-  }, [
-    userId,
-    dispatch,
-  ]);
-
-  // ====================================================
-  // MEDIA URL
-  // ====================================================
-
-  const getMediaUrl = (
-    mediaUrl
-  ) => {
-    if (!mediaUrl) {
-      return null;
-    }
-
-    if (
-      mediaUrl.startsWith("http")
-    ) {
+    if (mediaUrl.startsWith("http")) {
       return mediaUrl;
     }
 
     return `${BASE_URL}${mediaUrl}`;
   };
 
-  // ====================================================
-  // NORMALIZE SAVED REELS
-  // ====================================================
+  const normalizedPosts = useMemo(() => {
+    return savedPosts.map((post) => ({
+      ...post,
 
- const normalizedReels = useMemo(() => {
-  return savedReels.map((reel) => ({
-    ...reel,
+      id: post.id,
 
-    id: reel.id,
+      originalId: post.id,
 
-    originalId: reel.id,
+      media_type:
+        post.media_type || "image",
 
-    media_type: "video",
+      media_url:
+        post.media_url || null,
 
-    media_url:
-      reel.thumbnail_url || null,
+      is_saved: true,
+    }));
+  }, [savedPosts]);
 
-    video_url: reel.video_url,
+  const normalizedReels = useMemo(() => {
+    return savedReels.map((reel) => ({
+      ...reel,
 
-    is_saved: true,
-  }));
-}, [savedReels]);
+      id: reel.id,
 
-  // ====================================================
-  // NORMALIZE SAVED POSTS
-  // ====================================================
+      originalId: reel.id,
 
-  const normalizedPosts =
-    useMemo(() => {
-      return savedPosts.map(
-        (post) => ({
-          ...post,
+      media_type: "video",
 
-          originalId:
-            post.id,
+      thumbnail_url:
+        reel.thumbnail_url || null,
 
-          media_type:
-            post.media_type ||
-            "image",
-        })
-      );
-    }, [
-      savedPosts,
-    ]);
+      video_url:
+        reel.video_url || null,
 
-  // ====================================================
-  // ALL SAVED CONTENT
-  // ====================================================
+      is_saved: true,
+    }));
+  }, [savedReels]);
 
-  const allSaved =
-    useMemo(() => {
-      return [
-        ...normalizedPosts,
-        ...normalizedReels,
-      ];
-    }, [
-      normalizedPosts,
-      normalizedReels,
-    ]);
+  const allSaved = useMemo(() => {
+    return [
+      ...normalizedPosts,
+      ...normalizedReels,
+    ];
+  }, [
+    normalizedPosts,
+    normalizedReels,
+  ]);
 
-  // ====================================================
-  // FILTER
-  // ====================================================
+  const filteredItems = useMemo(() => {
+    switch (activeFilter) {
+      case "reels":
+        return normalizedReels;
 
-  const filteredPosts =
-    useMemo(() => {
-      switch (
-        activeFilter
-      ) {
-        case "reels":
-          return normalizedReels;
+      case "posts":
+        return normalizedPosts.filter(
+          (post) =>
+            post.media_type !== "video"
+        );
 
-        case "posts":
-          return normalizedPosts.filter(
-            (post) =>
-              post.media_type ===
-              "image"
-          );
+      case "audio":
+        return [];
 
-        case "audio":
-          return [];
+      case "series":
+        return [];
 
-        case "series":
-          return [];
+      case "collections":
+        return [];
 
-        case "collections":
-          return [];
+      case "all":
+      default:
+        return allSaved;
+    }
+  }, [
+    activeFilter,
+    normalizedPosts,
+    normalizedReels,
+    allSaved,
+  ]);
 
-        case "all":
-        default:
-          return allSaved;
-      }
-    }, [
-      activeFilter,
-      normalizedReels,
-      normalizedPosts,
-      allSaved,
-    ]);
-
-  // ====================================================
-  // FILTER BUTTON
-  // ====================================================
-
-  const renderFilter = ({
-    item,
-  }) => {
+  const renderFilter = ({ item }) => {
     const active =
-      activeFilter ===
-      item.id;
+      activeFilter === item.id;
 
     return (
       <TouchableOpacity
@@ -337,9 +210,7 @@ export default function Saved() {
             styles.activeFilterButton,
         ]}
         onPress={() =>
-          setActiveFilter(
-            item.id
-          )
+          setActiveFilter(item.id)
         }
         activeOpacity={0.8}
       >
@@ -356,58 +227,106 @@ export default function Saved() {
     );
   };
 
-  // ====================================================
-  // OPEN SAVED ITEM
-  // ====================================================
+  const handleItemPress = (item) => {
+    if (!item) return;
 
-const handlePostPress = (post) => {
-  if (post?.media_type !== "video") {
-    return;
-  }
+    // =========================
+    // OPEN SAVED REEL
+    // =========================
+    if (item.media_type === "video") {
+      const reelId =
+        item.originalId ?? item.id;
 
-  const reelId =
-    post?.originalId ??
-    post?.reel_id ??
-    post?.id;
+      console.log(
+        "=========================================="
+      );
 
-  console.log(
-    "=========================================="
-  );
+      console.log(
+        "OPEN SAVED REEL"
+      );
 
-  console.log(
-    "OPEN SAVED REEL"
-  );
+      console.log(
+        "REEL ID =>",
+        reelId
+      );
 
-  console.log(
-    "REEL ID =>",
-    reelId
-  );
+      console.log(
+        "VIDEO URL =>",
+        item.video_url
+      );
 
-  console.log(
-    "VIDEO URL =>",
-    post?.video_url
-  );
+      console.log(
+        "=========================================="
+      );
 
-  console.log(
-    "=========================================="
-  );
+      if (!reelId) return;
 
-  router.push({
-    pathname: "/profile-screens/reels-viewer",
-    params: {
-      source: "saved",
-      reelId: String(reelId),
-    },
-  });
-};
+      router.push({
+        pathname:
+          "/profile-screens/reels-viewer",
 
-  // ====================================================
-  // REEL THUMBNAIL
-  // ====================================================
+        params: {
+          source: "saved",
 
-  const renderReelThumbnail = (
-    item
-  ) => {
+          reelId: String(reelId),
+        },
+      });
+
+      return;
+    }
+
+    // =========================
+    // OPEN SAVED POST
+    // =========================
+
+    const postId =
+      item.originalId ?? item.id;
+
+    console.log(
+      "=========================================="
+    );
+
+    console.log(
+      "OPEN SAVED POST"
+    );
+
+    console.log(
+      "POST ID =>",
+      postId
+    );
+
+    console.log(
+      "USER ID =>",
+      item?.user_id
+    );
+
+    console.log(
+      "=========================================="
+    );
+
+    if (!postId) return;
+
+    const params = {
+      postId: String(postId),
+    };
+
+    // Pass the post owner's userId so
+    // PostsViewer loads the correct user's posts.
+    if (item?.user_id) {
+      params.userId = String(
+        item.user_id
+      );
+    }
+
+    router.push({
+      pathname:
+        "/profile-screens/posts-viewer",
+
+      params,
+    });
+  };
+
+  const renderReelThumbnail = (item) => {
     const thumbnail =
       getMediaUrl(
         item.thumbnail_url
@@ -419,15 +338,12 @@ const handlePostPress = (post) => {
           source={{
             uri: thumbnail,
           }}
-          style={
-            styles.gridImage
-          }
+          style={styles.gridImage}
           resizeMode="cover"
         />
       );
     }
 
-    // No thumbnail from API
     return (
       <View
         style={
@@ -441,9 +357,7 @@ const handlePostPress = (post) => {
         />
 
         <Text
-          style={
-            styles.reelText
-          }
+          style={styles.reelText}
         >
           Reel
         </Text>
@@ -451,32 +365,24 @@ const handlePostPress = (post) => {
     );
   };
 
-  // ====================================================
-  // RENDER GRID ITEM
-  // ====================================================
-
-  const renderSavedPost = ({
+  const renderSavedItem = ({
     item,
     index,
   }) => {
     const isReel =
-      item.media_type ===
-      "video";
+      item.media_type === "video";
 
-    const imageUrl =
-      !isReel
-        ? getMediaUrl(
-            item.media_url
-          )
-        : null;
+    const imageUrl = !isReel
+      ? getMediaUrl(
+          item.media_url
+        )
+      : null;
 
     return (
       <TouchableOpacity
         activeOpacity={0.9}
         onPress={() =>
-          handlePostPress(
-            item
-          )
+          handleItemPress(item)
         }
         style={[
           styles.gridItem,
@@ -488,22 +394,14 @@ const handlePostPress = (post) => {
           },
         ]}
       >
-        {/* =====================================
-            REEL
-        ===================================== */}
-
         {isReel ? (
-          renderReelThumbnail(
-            item
-          )
+          renderReelThumbnail(item)
         ) : imageUrl ? (
           <Image
             source={{
               uri: imageUrl,
             }}
-            style={
-              styles.gridImage
-            }
+            style={styles.gridImage}
             resizeMode="cover"
           />
         ) : (
@@ -520,15 +418,9 @@ const handlePostPress = (post) => {
           </View>
         )}
 
-        {/* =====================================
-            REEL ICON
-        ===================================== */}
-
         {isReel && (
           <View
-            style={
-              styles.videoIcon
-            }
+            style={styles.videoIcon}
           >
             <Ionicons
               name="play"
@@ -541,26 +433,13 @@ const handlePostPress = (post) => {
     );
   };
 
-  // ====================================================
-  // HEADER
-  // ====================================================
-
   const ListHeader = () => {
     return (
       <View>
-
-        {/* ==================================
-            FILTERS
-        ================================== */}
-
         <FlatList
           data={FILTERS}
-          renderItem={
-            renderFilter
-          }
-          keyExtractor={(
-            item
-          ) =>
+          renderItem={renderFilter}
+          keyExtractor={(item) =>
             item.id
           }
           horizontal
@@ -572,12 +451,7 @@ const handlePostPress = (post) => {
           }
         />
 
-        {/* ==================================
-            COLLECTIONS
-        ================================== */}
-
-        {activeFilter ===
-          "all" && (
+        {activeFilter === "all" && (
           <View
             style={
               styles.collectionsSection
@@ -629,10 +503,6 @@ const handlePostPress = (post) => {
           </View>
         )}
 
-        {/* ==================================
-            CONTENT HEADER
-        ================================== */}
-
         <View
           style={
             styles.postsSectionHeader
@@ -643,11 +513,9 @@ const handlePostPress = (post) => {
               styles.sectionTitle
             }
           >
-            {activeFilter ===
-            "reels"
+            {activeFilter === "reels"
               ? "Saved reels"
-              : activeFilter ===
-                "posts"
+              : activeFilter === "posts"
               ? "Saved posts"
               : "Reels and posts"}
           </Text>
@@ -663,12 +531,7 @@ const handlePostPress = (post) => {
           </TouchableOpacity>
         </View>
 
-        {/* ==================================
-            ERROR
-        ================================== */}
-
-        {(error ||
-          savedReelsError) && (
+        {error && (
           <View
             style={
               styles.errorContainer
@@ -679,8 +542,8 @@ const handlePostPress = (post) => {
                 styles.errorText
               }
             >
-              Unable to load some
-              saved content.
+              Unable to load saved
+              content.
             </Text>
           </View>
         )}
@@ -688,28 +551,163 @@ const handlePostPress = (post) => {
     );
   };
 
-  // ====================================================
+  // =========================
   // LOADING
-  // ====================================================
-
-  const isInitialLoading =
-    (loading ||
-      loadingSavedReels) &&
-    allSaved.length === 0;
+  // =========================
 
   if (
-    isInitialLoading
+    loading &&
+    allSaved.length === 0
   ) {
     return (
-      <View
-        style={
-          styles.container
-        }
-      >
-        <View
-          style={
-            styles.header
-          }
+      <ScreenLayout
+        backgroundColor="#080913"
+        keyboardAvoid={false}
+        header={
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.headerButton}
+            hitSlop={10}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={30}
+              color="#fff"
+            />
+          </TouchableOpacity>
+
+          <Text style={styles.headerTitle}>
+            Saved
+          </Text>
+
+          <TouchableOpacity
+            style={styles.headerButton}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="add"
+              size={34}
+              color="#fff"
+            />
+          </TouchableOpacity>
+        </View>
+      }
+    >
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator
+          size="large"
+          color="#fff"
+        />
+      </View>
+        {/* <View
+          style={styles.container}
+        >
+          <View
+            style={styles.header}
+          >
+            <TouchableOpacity
+              onPress={() =>
+                router.back()
+              }
+              style={
+                styles.headerButton
+              }
+            >
+              <Ionicons
+                name="arrow-back"
+                size={30}
+                color="#fff"
+              />
+            </TouchableOpacity>
+
+            <Text
+              style={
+                styles.headerTitle
+              }
+            >
+              Saved
+            </Text>
+
+            <TouchableOpacity
+              style={
+                styles.headerButton
+              }
+            >
+              <Ionicons
+                name="add"
+                size={34}
+                color="#fff"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View
+            style={
+              styles.loadingContainer
+            }
+          >
+            <ActivityIndicator
+              size="large"
+              color="#fff"
+            />
+          </View>
+        </View> */}
+      </ScreenLayout>
+    );
+  }
+
+  // =========================
+  // MAIN SCREEN
+  // =========================
+
+  return (
+    <ScreenLayout
+      backgroundColor="#080913"
+      keyboardAvoid={false}
+      header={
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.headerButton}
+          hitSlop={{
+            top: 10,
+            bottom: 10,
+            left: 10,
+            right: 10,
+          }}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={30}
+            color="#fff"
+          />
+        </TouchableOpacity>
+
+        <Text style={styles.headerTitle}>
+          Saved
+        </Text>
+
+        <TouchableOpacity
+          style={styles.headerButton}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name="add"
+            size={34}
+            color="#fff"
+          />
+        </TouchableOpacity>
+      </View>
+    }
+    >
+      {/* <View
+        style={styles.container}
+      > */}
+        {/* <View
+          style={styles.header}
         >
           <TouchableOpacity
             onPress={() =>
@@ -718,6 +716,12 @@ const handlePostPress = (post) => {
             style={
               styles.headerButton
             }
+            hitSlop={{
+              top: 10,
+              bottom: 10,
+              left: 10,
+              right: 10,
+            }}
           >
             <Ionicons
               name="arrow-back"
@@ -745,508 +749,257 @@ const handlePostPress = (post) => {
               color="#fff"
             />
           </TouchableOpacity>
-        </View>
+        </View> */}
 
-        <View
-          style={
-            styles.loadingContainer
-          }
-        >
-          <ActivityIndicator
-            size="large"
-            color="#fff"
-          />
-        </View>
-      </View>
-    );
-  }
-
-  // ====================================================
-  // MAIN
-  // ====================================================
-
-  return (
-    <View
-      style={
-        styles.container
+       <FlatList
+      data={filteredItems}
+      renderItem={renderSavedItem}
+      keyExtractor={(item, index) =>
+        `${item.media_type}-${item.id}-${index}`
       }
-    >
-      {/* ======================================
-          HEADER
-      ====================================== */}
-
-      <View
-        style={
-          styles.header
-        }
-      >
-        <TouchableOpacity
-          onPress={() =>
-            router.back()
-          }
-          style={
-            styles.headerButton
-          }
-          hitSlop={{
-            top: 10,
-            bottom: 10,
-            left: 10,
-            right: 10,
-          }}
-        >
+      numColumns={3}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={<ListHeader />}
+      columnWrapperStyle={styles.row}
+      contentContainerStyle={styles.listContent}
+      removeClippedSubviews={true}
+      ListEmptyComponent={
+        <View style={styles.emptyContainer}>
           <Ionicons
-            name="arrow-back"
-            size={30}
-            color="#fff"
+            name="bookmark-outline"
+            size={60}
+            color="#555"
           />
-        </TouchableOpacity>
 
-        <Text
-          style={
-            styles.headerTitle
-          }
-        >
-          Saved
-        </Text>
+          <Text style={styles.emptyTitle}>
+            No saved content
+          </Text>
 
-        <TouchableOpacity
-          style={
-            styles.headerButton
-          }
-        >
-          <Ionicons
-            name="add"
-            size={34}
-            color="#fff"
-          />
-        </TouchableOpacity>
-      </View>
-
-      {/* ======================================
-          GRID
-      ====================================== */}
-
-      <FlatList
-        data={
-          filteredPosts
-        }
-        renderItem={
-          renderSavedPost
-        }
-        keyExtractor={(
-          item
-        ) =>
-          String(item.id)
-        }
-        numColumns={3}
-        showsVerticalScrollIndicator={
-          false
-        }
-        ListHeaderComponent={
-          <ListHeader />
-        }
-        columnWrapperStyle={
-          styles.row
-        }
-        contentContainerStyle={
-          styles.listContent
-        }
-        removeClippedSubviews={
-          true
-        }
-        ListEmptyComponent={
-          <View
-            style={
-              styles.emptyContainer
-            }
-          >
-            <Ionicons
-              name="bookmark-outline"
-              size={60}
-              color="#555"
-            />
-
-            <Text
-              style={
-                styles.emptyTitle
-              }
-            >
-              No saved content
-            </Text>
-
-            <Text
-              style={
-                styles.emptySubtitle
-              }
-            >
-              Posts and reels you
-              save will appear
-              here.
-            </Text>
-          </View>
-        }
-      />
-    </View>
+          <Text style={styles.emptySubtitle}>
+            Posts and reels you save will appear here.
+          </Text>
+        </View>
+      }
+    />
+    </ScreenLayout>
   );
 }
 
-// ======================================================
-// STYLES
-// ======================================================
-
-const styles =
-  StyleSheet.create({
-
-    container: {
-      flex: 1,
-      backgroundColor:
-        "#080913",
-    },
-
-    // ==============================================
-    // HEADER
-    // ==============================================
-
-    header: {
-      height: 100,
-      paddingTop: 42,
-      paddingHorizontal: 15,
-
-      flexDirection:
-        "row",
-
-      alignItems:
-        "center",
-
-      justifyContent:
-        "space-between",
-
-      borderBottomWidth:
-        0.5,
-
-      borderBottomColor:
-        "#22242C",
-    },
-
-    headerButton: {
-      width: 45,
-      height: 45,
-
-      justifyContent:
-        "center",
-
-      alignItems:
-        "center",
-    },
-
-    headerTitle: {
-      color: "#fff",
-      fontSize: 23,
-      fontWeight: "700",
-    },
-
-    // ==============================================
-    // FILTERS
-    // ==============================================
-
-    filtersContainer: {
-      paddingHorizontal: 15,
-      paddingTop: 15,
-      paddingBottom: 12,
-
-      gap: 10,
-    },
-
-    filterButton: {
-      height: 42,
-
-      paddingHorizontal: 20,
-
-      borderRadius: 22,
-
-      borderWidth: 1,
-
-      borderColor:
-        "#30323A",
-
-      justifyContent:
-        "center",
-
-      alignItems:
-        "center",
-    },
-
-    activeFilterButton: {
-      backgroundColor:
-        "#292C33",
-
-      borderColor:
-        "#292C33",
-    },
-
-    filterText: {
-      color: "#fff",
-      fontSize: 14,
-      fontWeight: "600",
-    },
-
-    activeFilterText: {
-      color: "#fff",
-    },
-
-    // ==============================================
-    // COLLECTIONS
-    // ==============================================
-
-    collectionsSection: {
-      paddingHorizontal: 15,
-      paddingTop: 12,
-      paddingBottom: 15,
-    },
-
-    sectionHeader: {
-      flexDirection:
-        "row",
-
-      alignItems:
-        "center",
-
-      justifyContent:
-        "space-between",
-
-      marginBottom: 15,
-    },
-
-    sectionTitle: {
-      color: "#fff",
-      fontSize: 21,
-      fontWeight: "600",
-    },
-
-    seeAll: {
-      color: "#8FA8FF",
-      fontSize: 15,
-      fontWeight: "600",
-    },
-
-    emptyCollection: {
-      height: 100,
-
-      borderRadius: 12,
-
-      backgroundColor:
-        "#111319",
-
-      borderWidth: 1,
-
-      borderColor:
-        "#22242C",
-
-      justifyContent:
-        "center",
-
-      alignItems:
-        "center",
-    },
-
-    emptyCollectionText: {
-      color: "#777",
-      fontSize: 14,
-      marginTop: 7,
-    },
-
-    // ==============================================
-    // CONTENT HEADER
-    // ==============================================
-
-    postsSectionHeader: {
-      paddingHorizontal: 15,
-      paddingTop: 8,
-      paddingBottom: 15,
-
-      flexDirection:
-        "row",
-
-      justifyContent:
-        "space-between",
-
-      alignItems:
-        "center",
-    },
-
-    // ==============================================
-    // GRID
-    // ==============================================
-
-    listContent: {
-      paddingBottom: 30,
-    },
-
-    row: {
-      gap: GRID_GAP,
-    },
-
-    gridItem: {
-      width:
-        ITEM_WIDTH,
-
-      height:
-        ITEM_WIDTH,
-
-      backgroundColor:
-        "#15171D",
-
-      marginBottom:
-        GRID_GAP,
-
-      position:
-        "relative",
-
-      overflow:
-        "hidden",
-    },
-
-    gridImage: {
-      width: "100%",
-      height: "100%",
-    },
-
-    // ==============================================
-    // REEL PLACEHOLDER
-    // ==============================================
-
-    reelPlaceholder: {
-      flex: 1,
-
-      backgroundColor:
-        "#15171D",
-
-      justifyContent:
-        "center",
-
-      alignItems:
-        "center",
-    },
-
-    reelText: {
-      color: "#fff",
-
-      fontSize: 12,
-
-      fontWeight:
-        "600",
-
-      marginTop: 5,
-    },
-
-    // ==============================================
-    // IMAGE PLACEHOLDER
-    // ==============================================
-
-    imagePlaceholder: {
-      flex: 1,
-
-      justifyContent:
-        "center",
-
-      alignItems:
-        "center",
-
-      backgroundColor:
-        "#15171D",
-    },
-
-    // ==============================================
-    // REEL ICON
-    // ==============================================
-
-    videoIcon: {
-      position:
-        "absolute",
-
-      top: 8,
-      right: 8,
-
-      width: 27,
-      height: 27,
-
-      borderRadius: 14,
-
-      backgroundColor:
-        "rgba(0,0,0,0.65)",
-
-      justifyContent:
-        "center",
-
-      alignItems:
-        "center",
-    },
-
-    // ==============================================
-    // LOADING
-    // ==============================================
-
-    loadingContainer: {
-      flex: 1,
-
-      justifyContent:
-        "center",
-
-      alignItems:
-        "center",
-    },
-
-    // ==============================================
-    // EMPTY
-    // ==============================================
-
-    emptyContainer: {
-      minHeight: 250,
-
-      justifyContent:
-        "center",
-
-      alignItems:
-        "center",
-
-      paddingHorizontal: 30,
-    },
-
-    emptyTitle: {
-      color: "#fff",
-
-      fontSize: 19,
-
-      fontWeight:
-        "600",
-
-      marginTop: 15,
-    },
-
-    emptySubtitle: {
-      color: "#777",
-
-      fontSize: 14,
-
-      textAlign:
-        "center",
-
-      marginTop: 8,
-
-      lineHeight: 20,
-    },
-
-    // ==============================================
-    // ERROR
-    // ==============================================
-
-    errorContainer: {
-      paddingHorizontal: 15,
-      paddingBottom: 10,
-    },
-
-    errorText: {
-      color: "#ff5964",
-      fontSize: 14,
-    },
-  });
+const styles = StyleSheet.create({
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: "#080913",
+  // },
+
+  header: {
+    height: 60,
+    // paddingTop: 42,
+    paddingHorizontal: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent:
+      "space-between",
+    borderBottomWidth: 0.5,
+    borderBottomColor:
+      "#22242C",
+  },
+
+  headerButton: {
+    width: 45,
+    height: 45,
+    justifyContent:
+      "center",
+    alignItems: "center",
+  },
+
+  headerTitle: {
+    color: "#fff",
+    fontSize: 23,
+    fontWeight: "700",
+  },
+
+  filtersContainer: {
+    paddingHorizontal: 15,
+    paddingTop: 15,
+    paddingBottom: 12,
+    gap: 10,
+  },
+
+  filterButton: {
+    height: 42,
+    paddingHorizontal: 20,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: "#30323A",
+    justifyContent:
+      "center",
+    alignItems: "center",
+  },
+
+  activeFilterButton: {
+    backgroundColor: "#292C33",
+    borderColor: "#292C33",
+  },
+
+  filterText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+
+  activeFilterText: {
+    color: "#fff",
+  },
+
+  collectionsSection: {
+    paddingHorizontal: 15,
+    paddingTop: 12,
+    paddingBottom: 15,
+  },
+
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent:
+      "space-between",
+    marginBottom: 15,
+  },
+
+  sectionTitle: {
+    color: "#fff",
+    fontSize: 21,
+    fontWeight: "600",
+  },
+
+  seeAll: {
+    color: "#8FA8FF",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+
+  emptyCollection: {
+    height: 100,
+    borderRadius: 12,
+    backgroundColor: "#111319",
+    borderWidth: 1,
+    borderColor: "#22242C",
+    justifyContent:
+      "center",
+    alignItems: "center",
+  },
+
+  emptyCollectionText: {
+    color: "#777",
+    fontSize: 14,
+    marginTop: 7,
+  },
+
+  postsSectionHeader: {
+    paddingHorizontal: 15,
+    paddingTop: 8,
+    paddingBottom: 15,
+    flexDirection: "row",
+    justifyContent:
+      "space-between",
+    alignItems: "center",
+  },
+
+  listContent: {
+    paddingBottom: 100,
+  },
+
+  row: {
+    gap: GRID_GAP,
+  },
+
+  gridItem: {
+    width: ITEM_WIDTH,
+    height: ITEM_WIDTH,
+    backgroundColor: "#15171D",
+    marginBottom: GRID_GAP,
+    position: "relative",
+    overflow: "hidden",
+  },
+
+  gridImage: {
+    width: "100%",
+    height: "100%",
+  },
+
+  reelPlaceholder: {
+    flex: 1,
+    backgroundColor: "#15171D",
+    justifyContent:
+      "center",
+    alignItems: "center",
+  },
+
+  reelText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+    marginTop: 5,
+  },
+
+  imagePlaceholder: {
+    flex: 1,
+    justifyContent:
+      "center",
+    alignItems: "center",
+    backgroundColor: "#15171D",
+  },
+
+  videoIcon: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    width: 27,
+    height: 27,
+    borderRadius: 14,
+    backgroundColor:
+      "rgba(0,0,0,0.65)",
+    justifyContent:
+      "center",
+    alignItems: "center",
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent:
+      "center",
+    alignItems: "center",
+  },
+
+  emptyContainer: {
+    minHeight: 250,
+    justifyContent:
+      "center",
+    alignItems: "center",
+    paddingHorizontal: 30,
+  },
+
+  emptyTitle: {
+    color: "#fff",
+    fontSize: 19,
+    fontWeight: "600",
+    marginTop: 15,
+  },
+
+  emptySubtitle: {
+    color: "#777",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 8,
+    lineHeight: 20,
+  },
+
+  errorContainer: {
+    paddingHorizontal: 15,
+    paddingBottom: 10,
+  },
+
+  errorText: {
+    color: "#ff5964",
+    fontSize: 14,
+  },
+});

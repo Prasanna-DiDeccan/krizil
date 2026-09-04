@@ -27,18 +27,25 @@ export default function AdjustPanel({
     setValue
   ) => {
     return (
-      <View style={styles.row}>
-
-        <View style={styles.labelRow}>
-
-          <Text style={styles.label}>
+      <View
+        style={styles.row}
+      >
+        <View
+          style={styles.labelRow}
+        >
+          <Text
+            style={styles.label}
+          >
             {label}
           </Text>
 
-          <Text style={styles.value}>
-            {Math.round(value * 100)}
+          <Text
+            style={styles.value}
+          >
+            {Math.round(
+              value * 100
+            )}
           </Text>
-
         </View>
 
         <Slider
@@ -47,20 +54,24 @@ export default function AdjustPanel({
           maximumValue={1}
           step={0.01}
           value={value}
-          onValueChange={setValue}
+          onValueChange={
+            setValue
+          }
           minimumTrackTintColor="#8B5CF6"
           maximumTrackTintColor="#383844"
           thumbTintColor="#fff"
         />
-
       </View>
     );
   };
 
   return (
-    <View style={styles.container}>
-
-      <Text style={styles.title}>
+    <View
+      style={styles.container}
+    >
+      <Text
+        style={styles.title}
+      >
         Adjust
       </Text>
 
@@ -87,46 +98,47 @@ export default function AdjustPanel({
         warmth,
         setWarmth
       )}
-
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#000",
-    paddingHorizontal: 16,
-    paddingTop: 10,
-  },
+const styles =
+  StyleSheet.create({
+    container: {
+      backgroundColor: "#000",
+      paddingHorizontal: 16,
+      paddingTop: 10,
+    },
 
-  title: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "600",
-    marginBottom: 12,
-  },
+    title: {
+      color: "#fff",
+      fontSize: 15,
+      fontWeight: "600",
+      marginBottom: 12,
+    },
 
-  row: {
-    marginBottom: 8,
-  },
+    row: {
+      marginBottom: 8,
+    },
 
-  labelRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
+    labelRow: {
+      flexDirection: "row",
+      justifyContent:
+        "space-between",
+    },
 
-  label: {
-    color: "#fff",
-    fontSize: 14,
-  },
+    label: {
+      color: "#fff",
+      fontSize: 14,
+    },
 
-  value: {
-    color: "#888",
-    fontSize: 12,
-  },
+    value: {
+      color: "#888",
+      fontSize: 12,
+    },
 
-  slider: {
-    width: "100%",
-    height: 38,
-  },
-});
+    slider: {
+      width: "100%",
+      height: 38,
+    },
+  });

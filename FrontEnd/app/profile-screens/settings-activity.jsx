@@ -20,6 +20,8 @@ import { logout } from "../../src/redux/authSlice";
 
 import { Ionicons } from "@expo/vector-icons";
 
+import ScreenLayout from "../../src/components/ScreenLayout";
+
 export default function SettingsActivity() {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -130,13 +132,43 @@ export default function SettingsActivity() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScreenLayout
+      backgroundColor="#000"
+      keyboardAvoid={false}
+      header={
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={handleBack}
+          style={styles.backButton}
+          hitSlop={{
+            top: 10,
+            bottom: 10,
+            left: 10,
+            right: 10,
+          }}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color="#fff"
+          />
+        </TouchableOpacity>
 
+        <Text style={styles.headerTitle}>
+          Settings and activity
+        </Text>
+
+        <View style={styles.headerSpacer} />
+      </View>
+    }
+  
+    >
       {/* ======================================
           HEADER
       ====================================== */}
 
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <TouchableOpacity
           onPress={handleBack}
           style={styles.backButton}
@@ -159,7 +191,7 @@ export default function SettingsActivity() {
         </Text>
 
         <View style={styles.headerSpacer} />
-      </View>
+      </View> */}
 
       {/* ======================================
           CONTENT
@@ -175,10 +207,10 @@ export default function SettingsActivity() {
         {/* ====================================
             SETTINGS
         ==================================== */}
-
+{/* 
         <Text style={styles.sectionTitle}>
           Settings
-        </Text>
+        </Text> */}
 
         <SettingsOption
           icon="settings-outline"
@@ -302,7 +334,7 @@ export default function SettingsActivity() {
         <View style={styles.bottomSpace} />
 
       </ScrollView>
-    </View>
+    </ScreenLayout>
   );
 }
 
@@ -311,18 +343,18 @@ const styles = StyleSheet.create({
   // CONTAINER
   // ==========================================
 
-  container: {
-    flex: 1,
-    backgroundColor: "#000",
-  },
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: "#000",
+  // },
 
   // ==========================================
   // HEADER
   // ==========================================
 
   header: {
-    height: 100,
-    paddingTop: 45,
+    height: 60,
+    // paddingTop: 45,
     paddingHorizontal: 15,
 
     flexDirection: "row",
@@ -358,6 +390,7 @@ const styles = StyleSheet.create({
 
   scrollContent: {
     paddingTop: 10,
+    paddingBottom: 100,
   },
 
   // ==========================================

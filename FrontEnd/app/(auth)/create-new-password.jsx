@@ -10,7 +10,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useDispatch } from "react-redux";
-import Toast from "react-native-toast-message";
+// import Toast from "react-native-toast-message";
+// see notes in app/_layout.js for why.
+import Toast from "react-native-root-toast";
 import { Ionicons } from "@expo/vector-icons";
 
 import { resetPassword } from "../../src/redux/authSlice";

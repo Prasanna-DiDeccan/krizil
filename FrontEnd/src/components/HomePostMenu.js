@@ -1,68 +1,568 @@
+// import React, {
+//   forwardRef,
+//   useCallback,
+//   useImperativeHandle,
+//   useEffect,
+//   useState,
+// } from "react";
+
+// import {
+//   Modal,
+//   View,
+//   Text,
+//   Pressable,
+//   StyleSheet,
+//   Alert,
+//   ActivityIndicator,
+// } from "react-native";
+
+// import { useDispatch } from "react-redux";
+
+// import { deletePost } from "../redux/postSlice";
+
+// // ======================================================
+// // HOME POST MENU
+// // Same UI/behavior as HomeReelMenu
+// // ======================================================
+
+// const HomePostMenu = forwardRef(
+//   function HomePostMenu(
+//     {
+//       onDeleted,
+//     },
+//     ref
+//   ) {
+//     const dispatch = useDispatch();
+
+//     // ==================================================
+//     // STATE
+//     // ==================================================
+
+//     const [
+//       visible,
+//       setVisible,
+//     ] = useState(false);
+
+//     const [
+//       selectedPost,
+//       setSelectedPost,
+//     ] = useState(null);
+
+//     const [
+//       deleting,
+//       setDeleting,
+//     ] = useState(false);
+
+//     // ==================================================
+//     // OPEN
+//     // ==================================================
+
+//     const open = useCallback(
+//       (post) => {
+//         if (!post?.id) {
+//           console.log(
+//             "❌ POST MENU OPEN - ID MISSING"
+//           );
+
+//           return;
+//         }
+
+//         console.log(
+//           "📂 POST MENU OPEN =>",
+//           post.id
+//         );
+
+//         setSelectedPost(post);
+//         setDeleting(false);
+//         setVisible(true);
+//       },
+//       []
+//     );
+
+//     // ==================================================
+//     // EXPOSE OPEN
+//     // ==================================================
+
+//     useImperativeHandle(
+//       ref,
+//       () => ({
+//         open,
+//       }),
+//       [open]
+//     );
+
+//     // ==================================================
+//     // RESET WHEN CLOSED
+//     // ==================================================
+
+//     useEffect(() => {
+//       if (!visible) {
+//         setDeleting(false);
+//       }
+//     }, [visible]);
+
+//     // ==================================================
+//     // CLOSE
+//     // ==================================================
+
+//     const close = useCallback(() => {
+//       if (deleting) {
+//         return;
+//       }
+
+//       setVisible(false);
+//       setSelectedPost(null);
+//     }, [deleting]);
+
+//     // ==================================================
+//     // DELETE
+//     // ==================================================
+
+//     const handleDelete = useCallback(
+//       () => {
+//         if (deleting) {
+//           return;
+//         }
+
+//         if (!selectedPost?.id) {
+//           Alert.alert(
+//             "Error",
+//             "Invalid post ID."
+//           );
+
+//           return;
+//         }
+
+//         const numericPostId =
+//           Number(
+//             selectedPost.id
+//           );
+
+//         if (
+//           !Number.isInteger(
+//             numericPostId
+//           ) ||
+//           numericPostId <= 0
+//         ) {
+//           Alert.alert(
+//             "Error",
+//             "Invalid post ID."
+//           );
+
+//           return;
+//         }
+
+//         console.log(
+//           "🗑️ DELETE BUTTON PRESSED =>",
+//           numericPostId
+//         );
+
+//         Alert.alert(
+//           "Delete Post",
+//           "Are you sure you want to delete this post?",
+//           [
+//             {
+//               text: "Cancel",
+//               style: "cancel",
+//             },
+
+//             {
+//               text: "Delete",
+//               style: "destructive",
+
+//               onPress: async () => {
+//                 try {
+//                   setDeleting(true);
+
+//                   console.log(
+//                     "===================================="
+//                   );
+
+//                   console.log(
+//                     "🗑️ HOME POST DELETE START"
+//                   );
+
+//                   console.log(
+//                     "POST ID =>",
+//                     numericPostId
+//                   );
+
+//                   console.log(
+//                     "DISPATCH deletePost()"
+//                   );
+
+//                   // =================================
+//                   // DELETE API
+//                   // =================================
+
+//                   const result =
+//                     await dispatch(
+//                       deletePost({
+//                         postId:
+//                           numericPostId,
+//                       })
+//                     ).unwrap();
+
+//                   console.log(
+//                     "DELETE RESULT =>",
+//                     result
+//                   );
+
+//                   console.log(
+//                     "✅ HOME POST DELETE SUCCESS"
+//                   );
+
+//                   console.log(
+//                     "DELETED POST ID =>",
+//                     numericPostId
+//                   );
+
+//                   console.log(
+//                     "===================================="
+//                   );
+
+//                   // =================================
+//                   // CLOSE MENU
+//                   // =================================
+
+//                   setVisible(false);
+
+//                   setSelectedPost(null);
+
+//                   setDeleting(false);
+
+//                   // =================================
+//                   // NOTIFY HOME
+//                   // =================================
+
+//                   onDeleted?.(
+//                     result?.postId ??
+//                       result?.id ??
+//                       numericPostId
+//                   );
+//                 } catch (error) {
+//                   console.log(
+//                     "===================================="
+//                   );
+
+//                   console.log(
+//                     "❌ HOME POST DELETE FAILED"
+//                   );
+
+//                   console.log(
+//                     "ERROR =>",
+//                     error
+//                   );
+
+//                   console.log(
+//                     "===================================="
+//                   );
+
+//                   setDeleting(false);
+
+//                   const message =
+//                     typeof error ===
+//                     "string"
+//                       ? error
+//                       : error?.message ||
+//                         error?.detail ||
+//                         "Failed to delete post.";
+
+//                   Alert.alert(
+//                     "Delete Failed",
+//                     message
+//                   );
+//                 }
+//               },
+//             },
+//           ]
+//         );
+//       },
+//       [
+//         deleting,
+//         selectedPost,
+//         dispatch,
+//         onDeleted,
+//       ]
+//     );
+
+//     // ==================================================
+//     // RENDER
+//     // ==================================================
+
+//     return (
+//       <Modal
+//         visible={visible}
+//         transparent
+//         animationType="slide"
+//         statusBarTranslucent
+//         onRequestClose={close}
+//       >
+//         <Pressable
+//           style={
+//             styles.modalOverlay
+//           }
+//           onPress={close}
+//         >
+//           <Pressable
+//             style={
+//               styles.bottomSheet
+//             }
+//             onPress={(event) =>
+//               event.stopPropagation()
+//             }
+//           >
+//             {/* ==========================================
+//                 HANDLE
+//             ========================================== */}
+
+//             <View
+//               style={styles.handle}
+//             />
+
+//             {/* ==========================================
+//                 TITLE
+//             ========================================== */}
+
+//             <View
+//               style={
+//                 styles.header
+//               }
+//             >
+//               <Text
+//                 style={
+//                   styles.title
+//                 }
+//               >
+//                 Post options
+//               </Text>
+//             </View>
+
+//             {/* ==========================================
+//                 DELETE
+//             ========================================== */}
+
+//             <Pressable
+//               disabled={
+//                 deleting
+//               }
+//               onPress={
+//                 handleDelete
+//               }
+//               style={({
+//                 pressed,
+//               }) => [
+//                 styles.menuItem,
+
+//                 pressed &&
+//                   !deleting &&
+//                   styles.pressed,
+//               ]}
+//             >
+//               {deleting ? (
+//                 <ActivityIndicator
+//                   size="small"
+//                   color="#ff3040"
+//                 />
+//               ) : (
+//                 <Text
+//                   style={
+//                     styles.deleteText
+//                   }
+//                 >
+//                   Delete
+//                 </Text>
+//               )}
+//             </Pressable>
+
+//             {/* ==========================================
+//                 CANCEL
+//             ========================================== */}
+
+//             <Pressable
+//               disabled={
+//                 deleting
+//               }
+//               onPress={close}
+//               style={({
+//                 pressed,
+//               }) => [
+//                 styles.cancelButton,
+
+//                 pressed &&
+//                   !deleting &&
+//                   styles.pressed,
+//               ]}
+//             >
+//               <Text
+//                 style={
+//                   styles.cancelText
+//                 }
+//               >
+//                 Cancel
+//               </Text>
+//             </Pressable>
+//           </Pressable>
+//         </Pressable>
+//       </Modal>
+//     );
+//   }
+// );
+
+// export default HomePostMenu;
+
+// // ======================================================
+// // STYLES
+// // Exactly same as HomeReelMenu
+// // ======================================================
+
+// const styles =
+//   StyleSheet.create({
+
+//     modalOverlay: {
+//       flex: 1,
+
+//       backgroundColor:
+//         "rgba(0,0,0,0.55)",
+
+//       justifyContent:
+//         "flex-end",
+//     },
+
+//     bottomSheet: {
+//       backgroundColor:
+//         "#1B1E23",
+
+//       borderTopLeftRadius: 22,
+//       borderTopRightRadius: 22,
+
+//       paddingTop: 10,
+//       paddingBottom: 30,
+//       paddingHorizontal: 16,
+//     },
+
+//     handle: {
+//       width: 38,
+//       height: 4,
+
+//       borderRadius: 10,
+
+//       backgroundColor:
+//         "#85878C",
+
+//       alignSelf: "center",
+
+//       marginBottom: 12,
+//     },
+
+//     header: {
+//       paddingHorizontal: 8,
+
+//       paddingBottom: 8,
+//     },
+
+//     title: {
+//       color: "#fff",
+
+//       fontSize: 17,
+
+//       fontWeight: "700",
+//     },
+
+//     menuItem: {
+//       height: 58,
+
+//       flexDirection: "row",
+
+//       alignItems: "center",
+
+//       paddingHorizontal: 8,
+//     },
+
+//     deleteText: {
+//       color: "#ff3040",
+
+//       fontSize: 16,
+
+//       fontWeight: "600",
+//     },
+
+//     cancelButton: {
+//       height: 55,
+
+//       marginHorizontal: 0,
+
+//       borderRadius: 12,
+
+//       backgroundColor:
+//         "#292D33",
+
+//       alignItems: "center",
+
+//       justifyContent: "center",
+//     },
+
+//     cancelText: {
+//       color: "#fff",
+
+//       fontSize: 16,
+
+//       fontWeight: "600",
+//     },
+
+//     pressed: {
+//       opacity: 0.6,
+//     },
+//   });
+
+
 import React, {
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
-  useMemo,
   useState,
 } from "react";
 
 import {
+  Modal,
   View,
   Text,
-  Modal,
   Pressable,
-  TouchableOpacity,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
 import {
-  Ionicons,
-} from "@expo/vector-icons";
-
-import {
   useDispatch,
-  useSelector,
 } from "react-redux";
 
 import {
   deletePost,
-  savePost,
-  unsavePost,
 } from "../redux/postSlice";
 
+import {
+  getUser,
+} from "../utils/storage";
+
+// ======================================================
+// HOME POST MENU
+// ======================================================
+
 const HomePostMenu = forwardRef(
-  function HomePostMenu(_, ref) {
-    const dispatch = useDispatch();
+  function HomePostMenu(
+    {
+      onDeleted,
+    },
+    ref
+  ) {
+    const dispatch =
+      useDispatch();
 
-    // =================================================
-    // PROFILE
-    // =================================================
-
-    const profile = useSelector(
-      (state) =>
-        state.profile?.profile ||
-        state.profile?.user ||
-        state.auth?.profile ||
-        state.auth?.user ||
-        state.user?.profile ||
-        state.user?.user ||
-        null
-    );
-
-    // =================================================
-    // CURRENT USER
-    // =================================================
-
-    const currentUserId =
-      profile?.id ??
-      profile?.user_id ??
-      profile?.user?.id ??
-      null;
-
-    // =================================================
+    // ==================================================
     // STATE
-    // =================================================
+    // ==================================================
 
     const [
       visible,
@@ -74,30 +574,151 @@ const HomePostMenu = forwardRef(
       setSelectedPost,
     ] = useState(null);
 
-    // =================================================
+    const [
+      deleting,
+      setDeleting,
+    ] = useState(false);
+
+    // ==================================================
     // OPEN
-    // =================================================
+    // ==================================================
 
-    const open = useCallback(
-      (post) => {
-        if (!post?.id) {
-          return;
-        }
+    const open =
+      useCallback(
+        async (post) => {
+          if (!post?.id) {
+            console.log(
+              "❌ POST MENU OPEN - ID MISSING"
+            );
 
-        console.log(
-          "📂 POST MENU OPEN =>",
-          post.id
-        );
+            return;
+          }
 
-        setSelectedPost(post);
-        setVisible(true);
-      },
-      []
-    );
+          try {
+            // ==========================================
+            // GET CURRENT USER
+            // ==========================================
 
-    // =================================================
-    // EXPOSE OPEN TO HOME
-    // =================================================
+            const user =
+              await getUser();
+
+            const currentUserId =
+              user?.id ??
+              user?.user_id ??
+              user?.user?.id ??
+              null;
+
+            // ==========================================
+            // GET POST OWNER
+            // ==========================================
+
+            const postOwnerId =
+              post?.user?.id ??
+              post?.user_id ??
+              post?.owner_id ??
+              post?.author?.id ??
+              post?.owner?.id ??
+              post?.creator?.id ??
+              null;
+
+            console.log(
+              "================================"
+            );
+
+            console.log(
+              "POST MENU OWNERSHIP CHECK"
+            );
+
+            console.log(
+              "POST ID =>",
+              post?.id
+            );
+
+            console.log(
+              "CURRENT USER ID =>",
+              currentUserId
+            );
+
+            console.log(
+              "POST OWNER ID =>",
+              postOwnerId
+            );
+
+            console.log(
+              "================================"
+            );
+
+            // ==========================================
+            // CANNOT VERIFY
+            // ==========================================
+
+            if (
+              currentUserId == null ||
+              postOwnerId == null
+            ) {
+              console.log(
+                "❌ CANNOT VERIFY POST OWNER"
+              );
+
+              return;
+            }
+
+            // ==========================================
+            // NOT OWNER
+            // ==========================================
+
+            if (
+              Number(currentUserId) !==
+              Number(postOwnerId)
+            ) {
+              console.log(
+                "🚫 NOT POST OWNER"
+              );
+
+              console.log(
+                "🚫 MENU BLOCKED"
+              );
+
+              return;
+            }
+
+            // ==========================================
+            // OWNER
+            // ==========================================
+
+            console.log(
+              "✅ POST OWNER"
+            );
+
+            console.log(
+              "✅ MENU OPEN"
+            );
+
+            setSelectedPost(
+              post
+            );
+
+            setDeleting(
+              false
+            );
+
+            setVisible(
+              true
+            );
+
+          } catch (error) {
+            console.log(
+              "❌ POST OWNER CHECK ERROR =>",
+              error
+            );
+          }
+        },
+        []
+      );
+
+    // ==================================================
+    // EXPOSE OPEN
+    // ==================================================
 
     useImperativeHandle(
       ref,
@@ -107,280 +728,353 @@ const HomePostMenu = forwardRef(
       [open]
     );
 
-    // =================================================
-    // CLOSE
-    // =================================================
+    // ==================================================
+    // RESET WHEN CLOSED
+    // ==================================================
 
-    const close = useCallback(() => {
-      setVisible(false);
-      setSelectedPost(null);
-    }, []);
-
-    // =================================================
-    // CHECK OWNERSHIP
-    // =================================================
-
-    const isMyPost = useMemo(() => {
-      if (
-        !selectedPost ||
-        !currentUserId
-      ) {
-        return false;
+    useEffect(() => {
+      if (!visible) {
+        setDeleting(false);
       }
-
-      const authorId =
-        selectedPost?.author?.id ??
-        selectedPost?.author?.user_id ??
-        selectedPost?.user_id ??
-        selectedPost?.owner_id;
-
-      console.log(
-        "POST OWNER =>",
-        authorId,
-        "CURRENT USER =>",
-        currentUserId
-      );
-
-      return (
-        String(authorId) ===
-        String(currentUserId)
-      );
     }, [
-      selectedPost,
-      currentUserId,
+      visible,
     ]);
 
-    // =================================================
-    // SAVE / UNSAVE
-    // =================================================
+    // ==================================================
+    // CLOSE
+    // ==================================================
 
-    const handleSaveToggle =
-      useCallback(async () => {
-        if (!selectedPost?.id) {
-          return;
-        }
-
-        const isSaved =
-          !!selectedPost.is_saved;
-
-        try {
-          console.log(
-            isSaved
-              ? "🔖 UNSAVE POST =>"
-              : "🔖 SAVE POST =>",
-            selectedPost.id
-          );
-
-          if (isSaved) {
-            await dispatch(
-              unsavePost(
-                selectedPost.id
-              )
-            ).unwrap();
-          } else {
-            await dispatch(
-              savePost(
-                selectedPost.id
-              )
-            ).unwrap();
+    const close =
+      useCallback(
+        () => {
+          if (deleting) {
+            return;
           }
 
-          close();
-        } catch (error) {
-          console.log(
-            "❌ SAVE / UNSAVE ERROR =>",
-            error
+          setVisible(
+            false
           );
 
-          Alert.alert(
-            "Error",
-            isSaved
-              ? "Unable to unsave the post."
-              : "Unable to save the post."
+          setSelectedPost(
+            null
           );
-        }
-      }, [
-        dispatch,
-        selectedPost,
-        close,
-      ]);
+        },
+        [
+          deleting,
+        ]
+      );
 
-    // =================================================
+    // ==================================================
     // DELETE
-    // =================================================
+    // ==================================================
 
     const handleDelete =
-      useCallback(() => {
-        if (!selectedPost?.id) {
-          return;
-        }
+      useCallback(
+        () => {
+          if (deleting) {
+            return;
+          }
 
-        const postId =
-          Number(selectedPost.id);
+          if (!selectedPost?.id) {
+            Alert.alert(
+              "Error",
+              "Invalid post ID."
+            );
 
-        if (
-          !Number.isInteger(postId)
-        ) {
-          Alert.alert(
-            "Error",
-            "Invalid post ID."
+            return;
+          }
+
+          const numericPostId =
+            Number(
+              selectedPost.id
+            );
+
+          if (
+            !Number.isInteger(
+              numericPostId
+            ) ||
+            numericPostId <= 0
+          ) {
+            Alert.alert(
+              "Error",
+              "Invalid post ID."
+            );
+
+            return;
+          }
+
+          console.log(
+            "🗑️ DELETE BUTTON PRESSED =>",
+            numericPostId
           );
 
-          return;
-        }
-
-        close();
-
-        Alert.alert(
-          "Delete post?",
-          "Are you sure you want to delete this post?",
-          [
-            {
-              text: "Cancel",
-              style: "cancel",
-            },
-
-            {
-              text: "Delete",
-              style: "destructive",
-
-              onPress: async () => {
-                try {
-                  if (!currentUserId) {
-                    Alert.alert(
-                      "Error",
-                      "Unable to identify the current user."
-                    );
-
-                    return;
-                  }
-
-                  console.log(
-                    "🗑️ DELETE POST =>",
-                    postId
-                  );
-
-                  await dispatch(
-                    deletePost({
-                      postId,
-                      userId:
-                        currentUserId,
-                    })
-                  ).unwrap();
-
-                  console.log(
-                    "✅ POST DELETED =>",
-                    postId
-                  );
-                } catch (error) {
-                  console.log(
-                    "❌ DELETE POST ERROR =>",
-                    error
-                  );
-
-                  Alert.alert(
-                    "Error",
-                    "Unable to delete the post."
-                  );
-                }
+          Alert.alert(
+            "Delete Post",
+            "Are you sure you want to delete this post?",
+            [
+              {
+                text: "Cancel",
+                style: "cancel",
               },
-            },
-          ]
-        );
-      }, [
-        selectedPost,
-        currentUserId,
-        dispatch,
-        close,
-      ]);
 
-    // =================================================
+              {
+                text: "Delete",
+                style: "destructive",
+
+                onPress:
+                  async () => {
+                    try {
+                      setDeleting(
+                        true
+                      );
+
+                      console.log(
+                        "===================================="
+                      );
+
+                      console.log(
+                        "🗑️ HOME POST DELETE START"
+                      );
+
+                      console.log(
+                        "POST ID =>",
+                        numericPostId
+                      );
+
+                      console.log(
+                        "DISPATCH deletePost()"
+                      );
+
+                      // =================================
+                      // DELETE API
+                      // =================================
+
+                      const result =
+                        await dispatch(
+                          deletePost({
+                            postId:
+                              numericPostId,
+                          })
+                        ).unwrap();
+
+                      console.log(
+                        "DELETE RESULT =>",
+                        result
+                      );
+
+                      console.log(
+                        "✅ HOME POST DELETE SUCCESS"
+                      );
+
+                      console.log(
+                        "DELETED POST ID =>",
+                        numericPostId
+                      );
+
+                      console.log(
+                        "===================================="
+                      );
+
+                      // =================================
+                      // CLOSE MENU
+                      // =================================
+
+                      setVisible(
+                        false
+                      );
+
+                      setSelectedPost(
+                        null
+                      );
+
+                      setDeleting(
+                        false
+                      );
+
+                      // =================================
+                      // NOTIFY HOME
+                      // =================================
+
+                      onDeleted?.(
+                        result?.postId ??
+                          result?.id ??
+                          numericPostId
+                      );
+
+                    } catch (error) {
+                      console.log(
+                        "===================================="
+                      );
+
+                      console.log(
+                        "❌ HOME POST DELETE FAILED"
+                      );
+
+                      console.log(
+                        "ERROR =>",
+                        error
+                      );
+
+                      console.log(
+                        "===================================="
+                      );
+
+                      setDeleting(
+                        false
+                      );
+
+                      const message =
+                        typeof error ===
+                        "string"
+                          ? error
+                          : error?.message ||
+                            error?.detail ||
+                            "Failed to delete post.";
+
+                      Alert.alert(
+                        "Delete Failed",
+                        message
+                      );
+                    }
+                  },
+              },
+            ]
+          );
+        },
+        [
+          deleting,
+          selectedPost,
+          dispatch,
+          onDeleted,
+        ]
+      );
+
+    // ==================================================
     // RENDER
-    // =================================================
+    // ==================================================
 
     return (
       <Modal
-        visible={visible}
+        visible={
+          visible
+        }
         transparent
         animationType="slide"
-        onRequestClose={close}
+        statusBarTranslucent
+        onRequestClose={
+          close
+        }
       >
         <Pressable
           style={
             styles.modalOverlay
           }
-          onPress={close}
+          onPress={
+            close
+          }
         >
           <Pressable
             style={
               styles.bottomSheet
             }
-            onPress={() => {}}
+            onPress={(event) =>
+              event.stopPropagation()
+            }
           >
-            {/* HANDLE */}
+            {/* ==========================================
+                HANDLE
+            ========================================== */}
 
             <View
-              style={styles.handle}
+              style={
+                styles.handle
+              }
             />
 
-            {/* SAVE / UNSAVE */}
+            {/* ==========================================
+                TITLE
+            ========================================== */}
 
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={
-                handleSaveToggle
+            <View
+              style={
+                styles.header
               }
-              activeOpacity={0.7}
             >
-              <Ionicons
-                name={
-                  selectedPost?.is_saved
-                    ? "bookmark"
-                    : "bookmark-outline"
-                }
-                size={25}
-                color="#fff"
-              />
-
               <Text
                 style={
-                  styles.menuText
+                  styles.title
                 }
               >
-                {selectedPost?.is_saved
-                  ? "Unsave"
-                  : "Save"}
+                Post options
               </Text>
-            </TouchableOpacity>
+            </View>
 
-            {/* DELETE */}
+            {/* ==========================================
+                DELETE
+            ========================================== */}
 
-            {isMyPost && (
-              <TouchableOpacity
-                style={
-                  styles.menuItem
-                }
-                onPress={
-                  handleDelete
-                }
-                activeOpacity={0.7}
-              >
-                <Ionicons
-                  name="trash-outline"
-                  size={25}
+            <Pressable
+              disabled={
+                deleting
+              }
+              onPress={
+                handleDelete
+              }
+              style={({
+                pressed,
+              }) => [
+                styles.menuItem,
+
+                pressed &&
+                  !deleting &&
+                  styles.pressed,
+              ]}
+            >
+              {deleting ? (
+                <ActivityIndicator
+                  size="small"
                   color="#ff3040"
                 />
-
+              ) : (
                 <Text
-                  style={[
-                    styles.menuText,
-                    styles.deleteText,
-                  ]}
+                  style={
+                    styles.deleteText
+                  }
                 >
                   Delete
                 </Text>
-              </TouchableOpacity>
-            )}
+              )}
+            </Pressable>
+
+            {/* ==========================================
+                CANCEL
+            ========================================== */}
+
+            <Pressable
+              disabled={
+                deleting
+              }
+              onPress={
+                close
+              }
+              style={({
+                pressed,
+              }) => [
+                styles.cancelButton,
+
+                pressed &&
+                  !deleting &&
+                  styles.pressed,
+              ]}
+            >
+              <Text
+                style={
+                  styles.cancelText
+                }
+              >
+                Cancel
+              </Text>
+            </Pressable>
           </Pressable>
         </Pressable>
       </Modal>
@@ -394,59 +1088,106 @@ export default HomePostMenu;
 // STYLES
 // ======================================================
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor:
-      "rgba(0,0,0,0.55)",
-    justifyContent: "flex-end",
-  },
+const styles =
+  StyleSheet.create({
 
-  bottomSheet: {
-    backgroundColor: "#1B1E23",
+    modalOverlay: {
+      flex: 1,
 
-    borderTopLeftRadius: 22,
-    borderTopRightRadius: 22,
+      backgroundColor:
+        "rgba(0,0,0,0.55)",
 
-    paddingTop: 10,
-    paddingBottom: 30,
-    paddingHorizontal: 16,
-  },
+      justifyContent:
+        "flex-end",
+    },
 
-  handle: {
-    width: 38,
-    height: 4,
+    bottomSheet: {
+      backgroundColor:
+        "#1B1E23",
 
-    borderRadius: 10,
+      borderTopLeftRadius: 22,
+      borderTopRightRadius: 22,
 
-    backgroundColor: "#85878C",
+      paddingTop: 10,
+      paddingBottom: 30,
+      paddingHorizontal: 16,
+    },
 
-    alignSelf: "center",
+    handle: {
+      width: 38,
+      height: 4,
 
-    marginBottom: 12,
-  },
+      borderRadius: 10,
 
-  menuItem: {
-    height: 58,
+      backgroundColor:
+        "#85878C",
 
-    flexDirection: "row",
+      alignSelf:
+        "center",
 
-    alignItems: "center",
+      marginBottom: 12,
+    },
 
-    paddingHorizontal: 8,
-  },
+    header: {
+      paddingHorizontal: 8,
 
-  menuText: {
-    color: "#fff",
+      paddingBottom: 8,
+    },
 
-    fontSize: 16,
+    title: {
+      color: "#fff",
 
-    marginLeft: 18,
+      fontSize: 17,
 
-    fontWeight: "500",
-  },
+      fontWeight: "700",
+    },
 
-  deleteText: {
-    color: "#ff3040",
-  },
-});
+    menuItem: {
+      height: 58,
+
+      flexDirection:
+        "row",
+
+      alignItems:
+        "center",
+
+      paddingHorizontal: 8,
+    },
+
+    deleteText: {
+      color: "#ff3040",
+
+      fontSize: 16,
+
+      fontWeight: "600",
+    },
+
+    cancelButton: {
+      height: 55,
+
+      marginHorizontal: 0,
+
+      borderRadius: 12,
+
+      backgroundColor:
+        "#292D33",
+
+      alignItems:
+        "center",
+
+      justifyContent:
+        "center",
+    },
+
+    cancelText: {
+      color: "#fff",
+
+      fontSize: 16,
+
+      fontWeight: "600",
+    },
+
+    pressed: {
+      opacity: 0.6,
+    },
+  });

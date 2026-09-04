@@ -1,467 +1,7 @@
-// import React, { useState } from "react";
-
-// import {
-//   View,
-//   Text,
-//   Image,
-//   TouchableOpacity,
-//   StyleSheet,
-// } from "react-native";
-
-// import {
-//   Ionicons,
-//   MaterialCommunityIcons,
-// } from "@expo/vector-icons";
-
-// import { BASE_URL } from "../utils/api";
-
-// export default function PostCard({
-//   item,
-//   onMenuPress,
-// }) {
-//   const [liked, setLiked] = useState(
-//     item?.is_liked || false
-//   );
-
-//   const getMediaUrl = (url) => {
-//     if (!url) {
-//       return null;
-//     }
-
-//     if (
-//       url.startsWith("http://") ||
-//       url.startsWith("https://")
-//     ) {
-//       return url;
-//     }
-
-//     if (url.startsWith("/")) {
-//       return `${BASE_URL}${url}`;
-//     }
-
-//     return `${BASE_URL}/${url}`;
-//   };
-
-//   // ==========================================
-//   // API DATA
-//   // ==========================================
-
-//   const username =
-//     item?.author?.username ||
-//     item?.author?.full_name ||
-//     "";
-
-//   const avatarUrl = getMediaUrl(
-//     item?.author?.avatar_url
-//   );
-
-//   const mediaUrl = getMediaUrl(
-//     item?.media_url
-//   );
-
-//   const locationName =
-//     typeof item?.location === "object"
-//       ? item?.location?.name
-//       : item?.location;
-
-//   // ==========================================
-//   // RENDER
-//   // ==========================================
-
-//   return (
-//     <View style={styles.card}>
-
-//       {/* ======================================
-//           POST HEADER
-//       ====================================== */}
-
-//       <View style={styles.header}>
-
-//         <View style={styles.userRow}>
-
-//           {avatarUrl ? (
-//             <Image
-//               source={{
-//                 uri: avatarUrl,
-//               }}
-//               style={styles.avatar}
-//             />
-//           ) : (
-//             <View
-//               style={
-//                 styles.avatarPlaceholder
-//               }
-//             >
-//               <Ionicons
-//                 name="person"
-//                 size={22}
-//                 color="#aaa"
-//               />
-//             </View>
-//           )}
-
-//           <View>
-//             <Text style={styles.name}>
-//               {username}
-//             </Text>
-
-//             {locationName ? (
-//               <Text
-//                 style={styles.location}
-//               >
-//                 {locationName}
-//               </Text>
-//             ) : null}
-//           </View>
-
-//         </View>
-
-//         {/* THREE DOT */}
-
-//         <TouchableOpacity
-//           onPress={() =>
-//             onMenuPress?.(item)
-//           }
-//           hitSlop={{
-//             top: 15,
-//             bottom: 15,
-//             left: 15,
-//             right: 15,
-//           }}
-//           activeOpacity={0.7}
-//         >
-//           <Ionicons
-//             name="ellipsis-horizontal"
-//             size={24}
-//             color="#fff"
-//           />
-//         </TouchableOpacity>
-
-//       </View>
-
-//       {/* ======================================
-//           POST IMAGE
-//       ====================================== */}
-
-//       <View style={styles.imageContainer}>
-
-//         {mediaUrl ? (
-//           <Image
-//             source={{
-//               uri: mediaUrl,
-//             }}
-//             style={styles.postImage}
-//             resizeMode="cover"
-//           />
-//         ) : (
-//           <View style={styles.noImage}>
-//             <Ionicons
-//               name="image-outline"
-//               size={45}
-//               color="#777"
-//             />
-
-//             <Text
-//               style={styles.noImageText}
-//             >
-//               No image
-//             </Text>
-//           </View>
-//         )}
-
-//         {item?.media_count > 1 && (
-//           <View style={styles.counter}>
-//             <Text
-//               style={styles.counterText}
-//             >
-//               1/{item.media_count}
-//             </Text>
-//           </View>
-//         )}
-
-//         {item?.media_type === "video" && (
-//           <View style={styles.videoIcon}>
-//             <Ionicons
-//               name="play"
-//               size={15}
-//               color="#fff"
-//             />
-//           </View>
-//         )}
-
-//       </View>
-
-//       {/* ======================================
-//           ACTIONS
-//       ====================================== */}
-
-//       <View style={styles.actionRow}>
-
-//         <View style={styles.leftIcons}>
-
-//           {/* LIKE */}
-
-//           <TouchableOpacity
-//             onPress={() =>
-//               setLiked(!liked)
-//             }
-//             activeOpacity={0.7}
-//           >
-//             <Ionicons
-//               name={
-//                 liked
-//                   ? "heart"
-//                   : "heart-outline"
-//               }
-//               size={27}
-//               color={
-//                 liked
-//                   ? "#FF3158"
-//                   : "#fff"
-//               }
-//             />
-//           </TouchableOpacity>
-
-//           <Text style={styles.count}>
-//             {item?.likes_count || 0}
-//           </Text>
-
-//           {/* COMMENT */}
-
-//           <TouchableOpacity
-//             activeOpacity={0.7}
-//           >
-//             <Ionicons
-//               name="chatbubble-outline"
-//               size={25}
-//               color="#fff"
-//             />
-//           </TouchableOpacity>
-
-//           <Text style={styles.count}>
-//             {item?.comments_count || 0}
-//           </Text>
-
-//           {/* SHARE */}
-
-//           <TouchableOpacity
-//             activeOpacity={0.7}
-//           >
-//             <MaterialCommunityIcons
-//               name="send-outline"
-//               size={25}
-//               color="#fff"
-//             />
-//           </TouchableOpacity>
-
-//           <Text style={styles.count}>
-//             {item?.share_count || 0}
-//           </Text>
-
-//         </View>
-
-//         {/* SAVE */}
-
-//         <Ionicons
-//           name={
-//             item?.is_saved
-//               ? "bookmark"
-//               : "bookmark-outline"
-//           }
-//           size={26}
-//           color="#fff"
-//         />
-
-//       </View>
-
-//       {/* ======================================
-//           CAPTION
-//       ====================================== */}
-
-//       {item?.caption ? (
-//         <View
-//           style={
-//             styles.captionContainer
-//           }
-//         >
-//           <Text style={styles.caption}>
-//             <Text style={styles.bold}>
-//               {username}
-//             </Text>
-
-//             {" "}
-
-//             {item.caption}
-//           </Text>
-
-//           {item?.hashtags?.length > 0 && (
-//             <Text
-//               style={styles.hashTags}
-//             >
-//               {item.hashtags
-//                 .map(
-//                   (tag) =>
-//                     `#${tag}`
-//                 )
-//                 .join(" ")}
-//             </Text>
-//           )}
-//         </View>
-//       ) : null}
-
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   card: {
-//     backgroundColor: "#080913",
-//     marginBottom: 18,
-//     borderBottomWidth: 0.6,
-//     borderBottomColor: "#23242F",
-//     paddingBottom: 15,
-//   },
-
-//   header: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     paddingHorizontal: 14,
-//     marginBottom: 12,
-//   },
-
-//   userRow: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//   },
-
-//   avatar: {
-//     width: 42,
-//     height: 42,
-//     borderRadius: 21,
-//     marginRight: 10,
-//   },
-
-//   avatarPlaceholder: {
-//     width: 42,
-//     height: 42,
-//     borderRadius: 21,
-//     marginRight: 10,
-//     backgroundColor: "#24242D",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-
-//   name: {
-//     color: "#fff",
-//     fontWeight: "700",
-//     fontSize: 15,
-//   },
-
-//   location: {
-//     color: "#9B9BA6",
-//     marginTop: 2,
-//     fontSize: 12,
-//   },
-
-//   imageContainer: {
-//     width: "100%",
-//     position: "relative",
-//   },
-
-//   postImage: {
-//     width: "100%",
-//     height: 500,
-//     backgroundColor: "#161720",
-//   },
-
-//   noImage: {
-//     width: "100%",
-//     height: 500,
-//     backgroundColor: "#161720",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-
-//   noImageText: {
-//     color: "#777",
-//     marginTop: 8,
-//   },
-
-//   counter: {
-//     position: "absolute",
-//     right: 15,
-//     top: 15,
-//     backgroundColor:
-//       "rgba(0,0,0,0.65)",
-//     paddingHorizontal: 10,
-//     paddingVertical: 5,
-//     borderRadius: 20,
-//   },
-
-//   counterText: {
-//     color: "#fff",
-//     fontSize: 12,
-//     fontWeight: "700",
-//   },
-
-//   videoIcon: {
-//     position: "absolute",
-//     right: 15,
-//     top: 15,
-//     width: 28,
-//     height: 28,
-//     borderRadius: 14,
-//     backgroundColor:
-//       "rgba(0,0,0,0.65)",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-
-//   actionRow: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     marginTop: 15,
-//     paddingHorizontal: 14,
-//   },
-
-//   leftIcons: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//   },
-
-//   count: {
-//     color: "#fff",
-//     marginHorizontal: 7,
-//     fontSize: 15,
-//   },
-
-//   captionContainer: {
-//     paddingHorizontal: 14,
-//     marginTop: 12,
-//   },
-
-//   caption: {
-//     color: "#fff",
-//     fontSize: 15,
-//     lineHeight: 22,
-//   },
-
-//   bold: {
-//     fontWeight: "700",
-//   },
-
-//   hashTags: {
-//     color: "#7D5CFF",
-//     marginTop: 6,
-//     fontSize: 14,
-//   },
-// });
-
 import React, {
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -471,7 +11,6 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  Alert,
 } from "react-native";
 
 import {
@@ -479,15 +18,22 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 
+import { useRouter } from "expo-router";
+
 import {
   useDispatch,
+  useSelector,
 } from "react-redux";
 
 import {
-  deletePost,
   savePost,
   unsavePost,
 } from "../redux/postSlice";
+
+import {
+  likeTarget,
+  unlikeTarget,
+} from "../redux/likeSlice";
 
 import {
   getUser,
@@ -497,10 +43,29 @@ import {
   BASE_URL,
 } from "../utils/api";
 
+// ======================================================
+// COMPONENTS
+// ======================================================
+
+import CommentsSheet from "./comments/CommentsSheet";
+import LikesSheet from "./likes/LikesSheet";
+import HomePostMenu from "./HomePostMenu";
+
+// ======================================================
+// POST CARD
+// ======================================================
+
 export default function PostCard({
   item,
 }) {
+  const router = useRouter();
   const dispatch = useDispatch();
+
+  // ======================================================
+  // POST MENU REF
+  // ======================================================
+
+  const postMenuRef = useRef(null);
 
   // ======================================================
   // CURRENT USER
@@ -511,7 +76,13 @@ export default function PostCard({
     setCurrentUserId,
   ] = useState(null);
 
+  // ======================================================
+  // LOAD CURRENT USER
+  // ======================================================
+
   useEffect(() => {
+    let mounted = true;
+
     const loadUser = async () => {
       try {
         const user = await getUser();
@@ -529,35 +100,138 @@ export default function PostCard({
           user
         );
 
+        const userId =
+          user?.id ??
+          user?.user_id ??
+          user?.user?.id ??
+          null;
+
         console.log(
-          "USER ID =>",
-          user?.id
+          "CURRENT USER ID =>",
+          userId
         );
 
         console.log(
           "================================"
         );
 
-        setCurrentUserId(
-          user?.id ??
-          user?.user_id ??
-          user?.user?.id ??
-          null
-        );
-
+        if (mounted) {
+          setCurrentUserId(userId);
+        }
       } catch (error) {
         console.log(
           "❌ GET STORED USER ERROR =>",
           error
         );
+
+        if (mounted) {
+          setCurrentUserId(null);
+        }
       }
     };
 
     loadUser();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // ======================================================
-  // LIKE
+  // POST OWNER ID
+  //
+  // Supports different possible backend structures.
+  // Prefer item.user.id if your API returns:
+  //
+  // user: {
+  //   id: 23,
+  //   username: "testuser123"
+  // }
+  // ======================================================
+
+  const postOwnerId =
+    item?.user?.id ??
+    item?.user_id ??
+    item?.owner_id ??
+    item?.author?.id ??
+    item?.owner?.id ??
+    item?.creator?.id ??
+    null;
+
+  // ======================================================
+  // OWNER CHECK
+  // ======================================================
+
+  const isPostOwner =
+    currentUserId != null &&
+    postOwnerId != null &&
+    Number(currentUserId) ===
+      Number(postOwnerId);
+
+  // ======================================================
+  // OWNERSHIP DEBUG
+  // ======================================================
+
+  useEffect(() => {
+    console.log(
+      "================================"
+    );
+
+    console.log(
+      "POST OWNERSHIP CHECK"
+    );
+
+    console.log(
+      "POST ID =>",
+      item?.id
+    );
+
+    console.log(
+      "CURRENT USER ID =>",
+      currentUserId
+    );
+
+    console.log(
+      "POST OWNER ID =>",
+      postOwnerId
+    );
+
+    console.log(
+      "IS POST OWNER =>",
+      isPostOwner
+    );
+
+    console.log(
+      "================================"
+    );
+  }, [
+    item?.id,
+    currentUserId,
+    postOwnerId,
+    isPostOwner,
+  ]);
+
+  // ======================================================
+  // LIKE KEY
+  // ======================================================
+
+  const likeKey = item?.id
+    ? `post_${item.id}`
+    : null;
+
+  // ======================================================
+  // LIKE DATA FROM REDUX
+  // ======================================================
+
+  const reduxLike = useSelector(
+    (state) =>
+      likeKey
+        ? state.likes?.likes?.[likeKey]
+        : null
+  );
+
+  // ======================================================
+  // LIKE STATE
   // ======================================================
 
   const [
@@ -566,6 +240,48 @@ export default function PostCard({
   ] = useState(
     Boolean(item?.is_liked)
   );
+
+  const [
+    likeCount,
+    setLikeCount,
+  ] = useState(
+    item?.likes_count ?? 0
+  );
+
+  const [
+    liking,
+    setLiking,
+  ] = useState(false);
+
+  // ======================================================
+  // SYNC LIKE FROM REDUX / ITEM
+  // ======================================================
+
+  useEffect(() => {
+    if (!reduxLike) {
+      setLiked(
+        Boolean(item?.is_liked)
+      );
+
+      setLikeCount(
+        item?.likes_count ?? 0
+      );
+
+      return;
+    }
+
+    setLiked(
+      Boolean(reduxLike.isLiked)
+    );
+
+    setLikeCount(
+      reduxLike.count ?? 0
+    );
+  }, [
+    item?.is_liked,
+    item?.likes_count,
+    reduxLike,
+  ]);
 
   // ======================================================
   // SAVE
@@ -584,25 +300,22 @@ export default function PostCard({
   ] = useState(false);
 
   // ======================================================
-  // DELETE
+  // COMMENTS
   // ======================================================
 
   const [
-    deleting,
-    setDeleting,
+    commentsVisible,
+    setCommentsVisible,
   ] = useState(false);
 
   // ======================================================
-  // SYNC LIKE
+  // LIKES
   // ======================================================
 
-  useEffect(() => {
-    setLiked(
-      Boolean(item?.is_liked)
-    );
-  }, [
-    item?.is_liked,
-  ]);
+  const [
+    likesVisible,
+    setLikesVisible,
+  ] = useState(false);
 
   // ======================================================
   // SYNC SAVE
@@ -620,41 +333,42 @@ export default function PostCard({
   // MEDIA URL
   // ======================================================
 
-  const getMediaUrl = useCallback(
-    (url) => {
-      if (!url) {
-        return null;
-      }
+  const getMediaUrl =
+    useCallback(
+      (url) => {
+        if (!url) {
+          return null;
+        }
 
-      if (
-        url.startsWith("http://") ||
-        url.startsWith("https://")
-      ) {
-        return url;
-      }
+        if (
+          url.startsWith("http://") ||
+          url.startsWith("https://")
+        ) {
+          return url;
+        }
 
-      if (url.startsWith("/")) {
-        return `${BASE_URL}${url}`;
-      }
+        if (url.startsWith("/")) {
+          return `${BASE_URL}${url}`;
+        }
 
-      return `${BASE_URL}/${url}`;
-    },
-    []
-  );
+        return `${BASE_URL}/${url}`;
+      },
+      []
+    );
 
   // ======================================================
   // API DATA
   // ======================================================
 
   const username =
-    item?.author?.username ||
-    item?.author?.full_name ||
+    item?.user?.username ||
+    item?.user?.full_name ||
     item?.username ||
     "";
 
   const avatarUrl =
     getMediaUrl(
-      item?.author?.avatar_url
+      item?.user?.avatar_url
     );
 
   const mediaUrl =
@@ -668,255 +382,222 @@ export default function PostCard({
       : item?.location;
 
   // ======================================================
-  // SAVE / UNSAVE
+  // OPEN THREE DOT MENU
   // ======================================================
 
-  const handleSave = useCallback(
-    async () => {
-      if (
-        !item?.id ||
-        saving
-      ) {
+  const handleMenuPress =
+    useCallback(() => {
+      if (!item?.id) {
+        console.log(
+          "❌ POST ID NOT FOUND"
+        );
+
         return;
       }
 
-      try {
-        setSaving(true);
+      // ================================================
+      // EXTRA FRONTEND OWNER CHECK
+      // ================================================
 
+      if (!isPostOwner) {
         console.log(
-          "================================"
-        );
-
-        console.log(
-          saved
-            ? "🔖 UNSAVING POST"
-            : "🔖 SAVING POST"
+          "🚫 NOT POST OWNER - MENU NOT OPENED"
         );
 
         console.log(
-          "POST ID =>",
-          item.id
+          "CURRENT USER ID =>",
+          currentUserId
         );
 
         console.log(
-          "================================"
+          "POST OWNER ID =>",
+          postOwnerId
         );
 
-        if (saved) {
-          await dispatch(
-            unsavePost(item.id)
-          ).unwrap();
-
-          setSaved(false);
-
-          console.log(
-            "✅ POST UNSAVED =>",
-            item.id
-          );
-        } else {
-          await dispatch(
-            savePost(item.id)
-          ).unwrap();
-
-          setSaved(true);
-
-          console.log(
-            "✅ POST SAVED =>",
-            item.id
-          );
-        }
-
-      } catch (error) {
-        console.log(
-          "❌ SAVE / UNSAVE POST ERROR =>",
-          error
-        );
-
-        Alert.alert(
-          "Error",
-          typeof error === "string"
-            ? error
-            : error?.message ||
-              "Unable to update saved status."
-        );
-
-      } finally {
-        setSaving(false);
+        return;
       }
-    },
-    [
-      dispatch,
-      item?.id,
-      saved,
-      saving,
-    ]
-  );
+
+      console.log(
+        "================================"
+      );
+
+      console.log(
+        "📂 OPEN HOME POST MENU"
+      );
+
+      console.log(
+        "POST ID =>",
+        item.id
+      );
+
+      console.log(
+        "CURRENT USER ID =>",
+        currentUserId
+      );
+
+      console.log(
+        "POST OWNER ID =>",
+        postOwnerId
+      );
+
+      console.log(
+        "IS OWNER =>",
+        isPostOwner
+      );
+
+      console.log(
+        "================================"
+      );
+
+      postMenuRef.current?.open(
+        item
+      );
+    }, [
+      item,
+      isPostOwner,
+      currentUserId,
+      postOwnerId,
+    ]);
 
   // ======================================================
-  // DELETE POST API
+  // LIKE POST
   // ======================================================
 
-  const executeDeletePost =
+  const handleLike =
     useCallback(
       async () => {
-        if (!item?.id) {
-          console.log(
-            "❌ POST ID NOT FOUND"
-          );
-
+        if (
+          !item?.id ||
+          liking
+        ) {
           return;
         }
 
-        if (deleting) {
+        const postId =
+          Number(item.id);
+
+        if (
+          !Number.isInteger(postId)
+        ) {
+          console.log(
+            "❌ INVALID POST ID =>",
+            item?.id
+          );
+
           return;
         }
 
         try {
-          console.log(
-            "================================"
-          );
-
-          console.log(
-            "🗑️ DELETE HOME POST"
-          );
-
-          console.log(
-            "POST ID =>",
-            item.id
-          );
-
-          console.log(
-            "CURRENT USER ID =>",
-            currentUserId
-          );
+          setLiking(true);
 
           console.log(
             "================================"
           );
 
-          // ----------------------------------------------
-          // CHECK USER
-          // ----------------------------------------------
+          console.log(
+            liked
+              ? "💔 UNLIKE POST"
+              : "❤️ LIKE POST"
+          );
 
-          if (!currentUserId) {
-            Alert.alert(
-              "Error",
-              "Unable to identify the current user."
+          console.log(
+            "TARGET TYPE => post"
+          );
+
+          console.log(
+            "TARGET ID =>",
+            postId
+          );
+
+          console.log(
+            "================================"
+          );
+
+          // ==================================================
+          // UNLIKE
+          // ==================================================
+
+          if (liked) {
+            const result =
+              await dispatch(
+                unlikeTarget({
+                  targetType: "post",
+                  targetId: postId,
+                })
+              ).unwrap();
+
+            console.log(
+              "✅ POST UNLIKED =>",
+              result
+            );
+
+            setLiked(false);
+
+            setLikeCount(
+              (previous) =>
+                Math.max(
+                  0,
+                  previous - 1
+                )
             );
 
             return;
           }
 
-          // ----------------------------------------------
-          // POST ID
-          // ----------------------------------------------
+          // ==================================================
+          // LIKE
+          // ==================================================
 
-          const numericPostId =
-            Number(item.id);
+          const result =
+            await dispatch(
+              likeTarget({
+                targetType: "post",
+                targetId: postId,
+              })
+            ).unwrap();
+
+          console.log(
+            "✅ POST LIKED =>",
+            result
+          );
+
+          setLiked(true);
 
           if (
-            !Number.isInteger(
-              numericPostId
-            )
+            typeof result?.likes_count ===
+            "number"
           ) {
-            Alert.alert(
-              "Error",
-              "Invalid post ID."
+            setLikeCount(
+              result.likes_count
             );
-
-            return;
+          } else {
+            setLikeCount(
+              (previous) =>
+                previous + 1
+            );
           }
-
-          setDeleting(true);
-
-          console.log(
-            "🚀 DELETE POST API START"
-          );
-
-          console.log(
-            "POST ID =>",
-            numericPostId
-          );
-
-          console.log(
-            "USER ID =>",
-            currentUserId
-          );
-
-          // ----------------------------------------------
-          // DELETE API
-          // ----------------------------------------------
-
-          await dispatch(
-            deletePost({
-              postId:
-                numericPostId,
-
-              userId:
-                currentUserId,
-            })
-          ).unwrap();
-
-          console.log(
-            "================================"
-          );
-
-          console.log(
-            "✅ POST DELETED SUCCESSFULLY"
-          );
-
-          console.log(
-            "DELETED POST ID =>",
-            numericPostId
-          );
-
-          console.log(
-            "================================"
-          );
-
         } catch (error) {
           console.log(
-            "================================"
-          );
-
-          console.log(
-            "❌ DELETE POST ERROR"
-          );
-
-          console.log(
-            "ERROR =>",
+            "❌ POST LIKE ERROR =>",
             error
           );
-
-          console.log(
-            "================================"
-          );
-
-          Alert.alert(
-            "Delete Failed",
-            typeof error === "string"
-              ? error
-              : error?.message ||
-                "Unable to delete post."
-          );
-
         } finally {
-          setDeleting(false);
+          setLiking(false);
         }
       },
       [
         dispatch,
         item?.id,
-        currentUserId,
-        deleting,
+        liked,
+        liking,
       ]
     );
 
   // ======================================================
-  // THREE DOT MENU
+  // OPEN COMMENTS
   // ======================================================
 
-  const handleMenuPress =
+  const handleOpenComments =
     useCallback(() => {
       if (!item?.id) {
         console.log(
@@ -931,7 +612,7 @@ export default function PostCard({
       );
 
       console.log(
-        "⋮ POST THREE DOT PRESSED"
+        "💬 OPEN POST COMMENTS"
       );
 
       console.log(
@@ -943,36 +624,99 @@ export default function PostCard({
         "================================"
       );
 
-      Alert.alert(
-        "Delete Post",
-        "Are you sure you want to delete this post?",
-        [
-          // ----------------------------------------------
-          // CANCEL
-          // ----------------------------------------------
-
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-
-          // ----------------------------------------------
-          // DELETE
-          // ----------------------------------------------
-
-          {
-            text: "Delete",
-            style: "destructive",
-
-            onPress:
-              executeDeletePost,
-          },
-        ]
-      );
+      setCommentsVisible(true);
     }, [
       item?.id,
-      executeDeletePost,
     ]);
+
+  // ======================================================
+  // CLOSE COMMENTS
+  // ======================================================
+
+  const handleCloseComments =
+    useCallback(() => {
+      console.log(
+        "💬 CLOSE POST COMMENTS"
+      );
+
+      setCommentsVisible(false);
+    }, []);
+
+  // ======================================================
+  // SAVE / UNSAVE
+  // ======================================================
+
+  const handleSave =
+    useCallback(
+      async () => {
+        if (
+          !item?.id ||
+          saving
+        ) {
+          return;
+        }
+
+        try {
+          setSaving(true);
+
+          console.log(
+            "================================"
+          );
+
+          console.log(
+            saved
+              ? "🔖 UNSAVING POST"
+              : "🔖 SAVING POST"
+          );
+
+          console.log(
+            "POST ID =>",
+            item.id
+          );
+
+          console.log(
+            "================================"
+          );
+
+          if (saved) {
+            await dispatch(
+              unsavePost(item.id)
+            ).unwrap();
+
+            setSaved(false);
+
+            console.log(
+              "✅ POST UNSAVED =>",
+              item.id
+            );
+          } else {
+            await dispatch(
+              savePost(item.id)
+            ).unwrap();
+
+            setSaved(true);
+
+            console.log(
+              "✅ POST SAVED =>",
+              item.id
+            );
+          }
+        } catch (error) {
+          console.log(
+            "❌ SAVE / UNSAVE POST ERROR =>",
+            error
+          );
+        } finally {
+          setSaving(false);
+        }
+      },
+      [
+        dispatch,
+        item?.id,
+        saved,
+        saving,
+      ]
+    );
 
   // ======================================================
   // RENDER
@@ -982,7 +726,6 @@ export default function PostCard({
     <View
       style={styles.card}
     >
-
       {/* ==================================================
           HEADER
       ================================================== */}
@@ -990,13 +733,9 @@ export default function PostCard({
       <View
         style={styles.header}
       >
-
-        {/* USER */}
-
         <View
           style={styles.userRow}
         >
-
           {avatarUrl ? (
             <Image
               source={{
@@ -1023,13 +762,41 @@ export default function PostCard({
               styles.userInfo
             }
           >
+      <TouchableOpacity
+  activeOpacity={0.7}
+  onPress={() => {
+    if (!postOwnerId) {
+      console.log("❌ POST OWNER ID NOT FOUND");
+      return;
+    }
 
-            <Text
-              style={styles.name}
-              numberOfLines={1}
-            >
-              {username}
-            </Text>
+    console.log("================================");
+    console.log("👤 OPEN PROFILE");
+    console.log("POST OWNER ID =>", postOwnerId);
+    console.log("IS OWN POST =>", isPostOwner);
+    console.log("================================");
+
+    if (isPostOwner) {
+      // Own profile
+      router.push("/profile");
+    } else {
+      // Other user's profile
+      router.push({
+        pathname: "/profile-screens/user-profile",
+        params: {
+          userId: String(postOwnerId),
+        },
+      });
+    }
+  }}
+>
+  <Text
+    style={styles.name}
+    numberOfLines={1}
+  >
+    {username}
+  </Text>
+</TouchableOpacity>
 
             {locationName ? (
               <Text
@@ -1041,42 +808,37 @@ export default function PostCard({
                 {locationName}
               </Text>
             ) : null}
-
           </View>
-
         </View>
 
         {/* ==================================================
             THREE DOT
+            ONLY POST OWNER CAN SEE IT
         ================================================== */}
 
-        <TouchableOpacity
-          onPress={
-            handleMenuPress
-          }
-          disabled={
-            deleting
-          }
-          hitSlop={{
-            top: 15,
-            bottom: 15,
-            left: 15,
-            right: 15,
-          }}
-          activeOpacity={0.7}
-          style={
-            styles.menuButton
-          }
-        >
-
-          <Ionicons
-            name="ellipsis-horizontal"
-            size={24}
-            color="#fff"
-          />
-
-        </TouchableOpacity>
-
+        {isPostOwner && (
+          <TouchableOpacity
+            onPress={
+              handleMenuPress
+            }
+            hitSlop={{
+              top: 15,
+              bottom: 15,
+              left: 15,
+              right: 15,
+            }}
+            activeOpacity={0.7}
+            style={
+              styles.menuButton
+            }
+          >
+            <Ionicons
+              name="ellipsis-horizontal"
+              size={24}
+              color="#fff"
+            />
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* ==================================================
@@ -1088,7 +850,6 @@ export default function PostCard({
           styles.imageContainer
         }
       >
-
         {mediaUrl ? (
           <Image
             source={{
@@ -1103,7 +864,6 @@ export default function PostCard({
           <View
             style={styles.noImage}
           >
-
             <Ionicons
               name="image-outline"
               size={45}
@@ -1117,13 +877,10 @@ export default function PostCard({
             >
               No image
             </Text>
-
           </View>
         )}
 
-        {/* ==================================================
-            MEDIA COUNT
-        ================================================== */}
+        {/* MEDIA COUNT */}
 
         {item?.media_count > 1 && (
           <View
@@ -1139,9 +896,7 @@ export default function PostCard({
           </View>
         )}
 
-        {/* ==================================================
-            VIDEO ICON
-        ================================================== */}
+        {/* VIDEO ICON */}
 
         {item?.media_type ===
           "video" && (
@@ -1157,7 +912,6 @@ export default function PostCard({
             />
           </View>
         )}
-
       </View>
 
       {/* ==================================================
@@ -1169,102 +923,140 @@ export default function PostCard({
           styles.actionRow
         }
       >
-
         <View
           style={
             styles.leftIcons
           }
         >
-
           {/* ==================================================
               LIKE
           ================================================== */}
 
-          <TouchableOpacity
-            onPress={() =>
-              setLiked(
-                (previous) =>
-                  !previous
-              )
-            }
-            activeOpacity={0.7}
+          <View
             style={
-              styles.actionButton
+              styles.actionGroup
             }
           >
-
-            <Ionicons
-              name={
-                liked
-                  ? "heart"
-                  : "heart-outline"
+            <TouchableOpacity
+              onPress={
+                handleLike
               }
-              size={27}
-              color={
-                liked
-                  ? "#FF3158"
-                  : "#fff"
+              disabled={liking}
+              activeOpacity={0.7}
+              style={
+                styles.actionButton
               }
-            />
+            >
+              <Ionicons
+                name={
+                  liked
+                    ? "heart"
+                    : "heart-outline"
+                }
+                size={27}
+                color={
+                  liked
+                    ? "#FF3158"
+                    : "#fff"
+                }
+              />
+            </TouchableOpacity>
 
-          </TouchableOpacity>
-
-          <Text
-            style={styles.count}
-          >
-            {item?.likes_count || 0}
-          </Text>
+            <TouchableOpacity
+              onPress={() =>
+                setLikesVisible(true)
+              }
+              hitSlop={{
+                top: 10,
+                bottom: 10,
+                left: 10,
+                right: 10,
+              }}
+            >
+              <Text
+                style={
+                  styles.count
+                }
+              >
+                {likeCount}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           {/* ==================================================
               COMMENT
           ================================================== */}
 
-          <TouchableOpacity
-            activeOpacity={0.7}
+          <View
             style={
-              styles.actionButton
+              styles.actionGroup
             }
           >
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={
+                styles.actionButton
+              }
+              onPress={
+                handleOpenComments
+              }
+              hitSlop={{
+                top: 10,
+                bottom: 10,
+                left: 10,
+                right: 10,
+              }}
+            >
+              <Ionicons
+                name="chatbubble-outline"
+                size={25}
+                color="#fff"
+              />
+            </TouchableOpacity>
 
-            <Ionicons
-              name="chatbubble-outline"
-              size={25}
-              color="#fff"
-            />
-
-          </TouchableOpacity>
-
-          <Text
-            style={styles.count}
-          >
-            {item?.comments_count || 0}
-          </Text>
+            <Text
+              style={styles.count}
+            >
+              {item?.comments_count ||
+                0}
+            </Text>
+          </View>
 
           {/* ==================================================
               SHARE
           ================================================== */}
 
-          <TouchableOpacity
-            activeOpacity={0.7}
+          <View
             style={
-              styles.actionButton
+              styles.actionGroup
             }
           >
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={
+                styles.actionButton
+              }
+              onPress={() =>
+                console.log(
+                  "SHARE POST =>",
+                  item?.id
+                )
+              }
+            >
+              <MaterialCommunityIcons
+                name="send-outline"
+                size={25}
+                color="#fff"
+              />
+            </TouchableOpacity>
 
-            <MaterialCommunityIcons
-              name="send-outline"
-              size={25}
-              color="#fff"
-            />
-
-          </TouchableOpacity>
-
-          <Text
-            style={styles.count}
-          >
-            {item?.share_count || 0}
-          </Text>
-
+            <Text
+              style={styles.count}
+            >
+              {item?.share_count ||
+                0}
+            </Text>
+          </View>
         </View>
 
         {/* ==================================================
@@ -1275,13 +1067,10 @@ export default function PostCard({
           onPress={
             handleSave
           }
-          disabled={
-            saving
-          }
+          disabled={saving}
           activeOpacity={0.7}
           hitSlop={8}
         >
-
           <Ionicons
             name={
               saved
@@ -1291,9 +1080,7 @@ export default function PostCard({
             size={26}
             color="#fff"
           />
-
         </TouchableOpacity>
-
       </View>
 
       {/* ==================================================
@@ -1306,11 +1093,9 @@ export default function PostCard({
             styles.captionContainer
           }
         >
-
           <Text
             style={styles.caption}
           >
-
             <Text
               style={styles.bold}
             >
@@ -1320,12 +1105,9 @@ export default function PostCard({
             {" "}
 
             {item.caption}
-
           </Text>
 
-          {/* ==================================================
-              HASHTAGS
-          ================================================== */}
+          {/* HASHTAGS */}
 
           {item?.hashtags?.length >
             0 && (
@@ -1342,10 +1124,48 @@ export default function PostCard({
                 .join(" ")}
             </Text>
           )}
-
         </View>
       ) : null}
 
+      {/* ==================================================
+          COMMENTS SHEET
+      ================================================== */}
+
+      <CommentsSheet
+        visible={
+          commentsVisible
+        }
+        postId={
+          item?.id
+        }
+        onClose={
+          handleCloseComments
+        }
+      />
+
+      {/* ==================================================
+          LIKES SHEET
+      ================================================== */}
+
+      <LikesSheet
+        visible={
+          likesVisible
+        }
+        postId={
+          item?.id
+        }
+        onClose={() =>
+          setLikesVisible(false)
+        }
+      />
+
+      {/* ==================================================
+          HOME POST MENU
+      ================================================== */}
+
+      <HomePostMenu
+        ref={postMenuRef}
+      />
     </View>
   );
 }
@@ -1357,27 +1177,20 @@ export default function PostCard({
 const styles =
   StyleSheet.create({
 
-    // ==================================================
-    // CARD
-    // ==================================================
-
     card: {
       backgroundColor:
         "#080913",
 
       marginBottom: 18,
 
-      borderBottomWidth: 0.6,
+      borderBottomWidth:
+        0.6,
 
       borderBottomColor:
         "#23242F",
 
       paddingBottom: 15,
     },
-
-    // ==================================================
-    // HEADER
-    // ==================================================
 
     header: {
       flexDirection:
@@ -1394,10 +1207,6 @@ const styles =
       marginBottom: 12,
     },
 
-    // ==================================================
-    // USER ROW
-    // ==================================================
-
     userRow: {
       flexDirection:
         "row",
@@ -1407,10 +1216,6 @@ const styles =
 
       flex: 1,
     },
-
-    // ==================================================
-    // AVATAR
-    // ==================================================
 
     avatar: {
       width: 42,
@@ -1439,10 +1244,6 @@ const styles =
         "center",
     },
 
-    // ==================================================
-    // USER INFO
-    // ==================================================
-
     userInfo: {
       flex: 1,
     },
@@ -1457,17 +1258,12 @@ const styles =
     },
 
     location: {
-      color:
-        "#9B9BA6",
-
-      marginTop: 2,
+      color: "#9B9CA7",
 
       fontSize: 12,
-    },
 
-    // ==================================================
-    // MENU
-    // ==================================================
+      marginTop: 2,
+    },
 
     menuButton: {
       width: 40,
@@ -1480,123 +1276,105 @@ const styles =
         "center",
     },
 
-    // ==================================================
-    // IMAGE
-    // ==================================================
-
     imageContainer: {
       width: "100%",
 
-      position:
-        "relative",
+      aspectRatio: 1,
+
+      backgroundColor:
+        "#11121B",
+
+      position: "relative",
+
+      overflow: "hidden",
     },
 
     postImage: {
       width: "100%",
-
-      height: 500,
-
-      backgroundColor:
-        "#161720",
+      height: "100%",
     },
 
     noImage: {
-      width: "100%",
-
-      height: 500,
-
-      backgroundColor:
-        "#161720",
+      flex: 1,
 
       justifyContent:
         "center",
 
       alignItems:
         "center",
+
+      backgroundColor:
+        "#12131D",
     },
 
     noImageText: {
       color: "#777",
 
+      fontSize: 13,
+
       marginTop: 8,
     },
 
-    // ==================================================
-    // MEDIA COUNT
-    // ==================================================
-
     counter: {
-      position:
-        "absolute",
+      position: "absolute",
 
-      right: 15,
+      top: 12,
+      right: 12,
 
-      top: 15,
+      paddingHorizontal: 9,
+      paddingVertical: 5,
+
+      borderRadius: 15,
 
       backgroundColor:
         "rgba(0,0,0,0.65)",
-
-      paddingHorizontal: 10,
-
-      paddingVertical: 5,
-
-      borderRadius: 20,
     },
 
     counterText: {
       color: "#fff",
 
-      fontSize: 12,
+      fontSize: 11,
 
       fontWeight:
         "700",
     },
 
-    // ==================================================
-    // VIDEO ICON
-    // ==================================================
-
     videoIcon: {
-      position:
-        "absolute",
+      position: "absolute",
 
-      right: 15,
+      right: 12,
+      bottom: 12,
 
-      top: 15,
+      width: 30,
+      height: 30,
 
-      width: 28,
-
-      height: 28,
-
-      borderRadius: 14,
+      borderRadius: 15,
 
       backgroundColor:
         "rgba(0,0,0,0.65)",
 
-      justifyContent:
-        "center",
-
       alignItems:
         "center",
-    },
 
-    // ==================================================
-    // ACTION ROW
-    // ==================================================
+      justifyContent:
+        "center",
+    },
 
     actionRow: {
       flexDirection:
         "row",
 
-      justifyContent:
-        "space-between",
-
       alignItems:
         "center",
 
-      marginTop: 15,
+      justifyContent:
+        "space-between",
 
       paddingHorizontal: 14,
+
+      paddingTop: 10,
+
+      paddingBottom: 2,
     },
 
     leftIcons: {
@@ -1607,48 +1385,66 @@ const styles =
         "center",
     },
 
+    actionGroup: {
+      flexDirection:
+        "row",
+
+      alignItems:
+        "center",
+
+      marginRight: 13,
+    },
+
     actionButton: {
-      marginRight: 2,
+      width: 32,
+      height: 34,
+
+      alignItems:
+        "center",
+
+      justifyContent:
+        "center",
     },
 
     count: {
       color: "#fff",
 
-      marginHorizontal: 7,
+      fontSize: 12,
 
-      fontSize: 15,
+      fontWeight:
+        "600",
+
+      marginLeft: 2,
     },
-
-    // ==================================================
-    // CAPTION
-    // ==================================================
 
     captionContainer: {
       paddingHorizontal: 14,
 
-      marginTop: 12,
+      paddingTop: 7,
     },
 
     caption: {
-      color: "#fff",
+      color: "#F5F5F5",
 
-      fontSize: 15,
+      fontSize: 13,
 
-      lineHeight: 22,
+      lineHeight: 19,
     },
 
     bold: {
+      color: "#fff",
+
       fontWeight:
         "700",
     },
 
     hashTags: {
-      color:
-        "#7D5CFF",
+      color: "#4FA3FF",
 
-      marginTop: 6,
+      fontSize: 13,
 
-      fontSize: 14,
+      lineHeight: 19,
+
+      marginTop: 3,
     },
-
   });

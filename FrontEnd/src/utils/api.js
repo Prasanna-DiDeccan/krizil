@@ -7,8 +7,15 @@ import {
   logoutUser,
 } from "./storage";
 
-export const BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL;
+import {
+  emitAuthLogout,
+} from "./authEvents";
+
+// export const BASE_URL =
+//   process.env.EXPO_PUBLIC_API_BASE_URL;
+// console.log("BASE_URL =>", BASE_URL);
+export const BASE_URL = "http://32.199.119.31:8000";
+
 console.log("BASE_URL =>", BASE_URL);
 // ==================================================
 // NORMAL API
@@ -150,6 +157,8 @@ api.interceptors.response.use(
       if (!refreshToken) {
         await logoutUser();
 
+        emitAuthLogout();
+        
         processQueue(
           new Error(
             "Refresh token not found"
@@ -229,6 +238,8 @@ api.interceptors.response.use(
 
       // Refresh token invalid/expired
       await logoutUser();
+
+      emitAuthLogout();
 
       return Promise.reject(
         refreshError

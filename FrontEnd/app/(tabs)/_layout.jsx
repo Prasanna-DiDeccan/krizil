@@ -224,9 +224,11 @@ const styles = StyleSheet.create({
   },
 
   item: {
+    flex: 1,
+    width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 2,
+    // marginTop: 2,
   },
 
   label: {
@@ -240,6 +242,8 @@ const styles = StyleSheet.create({
   },
 
   centerButton: {
+    flex: 1,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
     top: -10,

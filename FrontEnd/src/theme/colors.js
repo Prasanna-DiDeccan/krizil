@@ -24,6 +24,9 @@ export const Colors = {
 
   gradients: {
     primary: ['#7C3AED', '#5B21B6'],
+    secondary: ["#D62CC9",
+              "#B62BD8",
+              "#9F2BEF",],
     story:   ['#F59E0B', '#FF3B5C', '#7C3AED'],
     dark:    ['#0A0A0F', 'transparent'],
   },

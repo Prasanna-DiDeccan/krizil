@@ -4,155 +4,224 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Image,
   ScrollView,
   StyleSheet,
 } from "react-native";
 
-import {
-  Canvas,
-  Image as SkiaImage,
-  ColorMatrix,
-  CubicSampling,
-} from "@shopify/react-native-skia";
+const FILTERS = [
+  {
+    name: "Original",
+    matrix: [
+      1, 0, 0, 0, 0,
+      0, 1, 0, 0, 0,
+      0, 0, 1, 0, 0,
+      0, 0, 0, 1, 0,
+    ],
+  },
 
-import { FILTERS } from "../filters/filterMatrices";
+  {
+    name: "Clarendon",
+    matrix: [
+      1.1, 0, 0, 0, 0,
+      0, 1.1, 0, 0, 0,
+      0, 0, 1.15, 0, 0,
+      0, 0, 0, 1, 0,
+    ],
+  },
+
+  {
+    name: "Lark",
+    matrix: [
+      1.05, 0, 0, 0, 5,
+      0, 1.08, 0, 0, 5,
+      0, 0, 1.12, 0, 5,
+      0, 0, 0, 1, 0,
+    ],
+  },
+
+  {
+    name: "Juno",
+    matrix: [
+      1.12, 0, 0, 0, 0,
+      0, 1.03, 0, 0, 0,
+      0, 0, 0.95, 0, 0,
+      0, 0, 0, 1, 0,
+    ],
+  },
+
+  {
+    name: "Valencia",
+    matrix: [
+      1.08, 0, 0, 0, 4,
+      0, 1.02, 0, 0, 2,
+      0, 0, 0.92, 0, 0,
+      0, 0, 0, 1, 0,
+    ],
+  },
+
+  {
+    name: "Gingham",
+    matrix: [
+      0.95, 0, 0, 0, 5,
+      0, 0.95, 0, 0, 5,
+      0, 0, 0.95, 0, 5,
+      0, 0, 0, 1, 0,
+    ],
+  },
+];
 
 export default function FilterPanel({
   image,
   selectedFilter,
   setSelectedFilter,
 }) {
-  return (
-    <View style={styles.container}>
+  const current =
+    FILTERS.find(
+      (filter) =>
+        filter.name ===
+        selectedFilter
+    ) ||
+    FILTERS[0];
 
-      <Text style={styles.title}>
+  return (
+    <View
+      style={styles.container}
+    >
+      <Text
+        style={styles.title}
+      >
         Filters
       </Text>
 
       <ScrollView
         horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scroll}
+        showsHorizontalScrollIndicator={
+          false
+        }
+        contentContainerStyle={
+          styles.scroll
+        }
       >
+        {FILTERS.map(
+          (filter) => {
+            const active =
+              selectedFilter ===
+              filter.name;
 
-        {Object.keys(FILTERS).map(
-          (filterName) => (
-            <TouchableOpacity
-              key={filterName}
-              style={styles.item}
-              onPress={() =>
-                setSelectedFilter(
-                  filterName
-                )
-              }
-            >
-
-              <View
-                style={[
-                  styles.preview,
-                  selectedFilter ===
-                    filterName &&
-                    styles.selected,
-                ]}
+            return (
+              <TouchableOpacity
+                key={
+                  filter.name
+                }
+                style={
+                  styles.item
+                }
+                onPress={() =>
+                  setSelectedFilter(
+                    filter.name
+                  )
+                }
               >
-
-                <Canvas
-                  style={styles.canvas}
+                <View
+                  style={[
+                    styles.preview,
+                    active &&
+                      styles.active,
+                  ]}
                 >
-
-                  <SkiaImage
-                    image={image}
-                    x={0}
-                    y={0}
-                    width={78}
-                    height={78}
-                    fit="cover"
-                    sampling={CubicSampling}
-                  >
-                    <ColorMatrix
-                      matrix={
-                        FILTERS[
-                          filterName
-                        ]
+                  {image && (
+                    <Image
+                      source={{
+                        uri: image,
+                      }}
+                      style={
+                        styles.image
                       }
                     />
-                  </SkiaImage>
+                  )}
+                </View>
 
-                </Canvas>
-
-              </View>
-
-              <Text
-                style={[
-                  styles.name,
-                  selectedFilter ===
-                    filterName &&
-                    styles.activeName,
-                ]}
-              >
-                {filterName}
-              </Text>
-
-            </TouchableOpacity>
-          )
+                <Text
+                  style={[
+                    styles.name,
+                    active &&
+                      styles.activeText,
+                  ]}
+                >
+                  {
+                    filter.name
+                  }
+                </Text>
+              </TouchableOpacity>
+            );
+          }
         )}
-
       </ScrollView>
-
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#000",
-    paddingTop: 10,
-  },
+export {
+  FILTERS,
+};
 
-  title: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "600",
-    paddingHorizontal: 15,
-    marginBottom: 10,
-  },
+const styles =
+  StyleSheet.create({
+    container: {
+      backgroundColor:
+        "#000",
+      paddingTop: 10,
+      paddingBottom: 12,
+    },
 
-  scroll: {
-    paddingHorizontal: 15,
-  },
+    title: {
+      color: "#fff",
+      fontSize: 15,
+      fontWeight: "600",
+      paddingHorizontal: 16,
+      marginBottom: 12,
+    },
 
-  item: {
-    width: 88,
-    alignItems: "center",
-    marginRight: 12,
-  },
+    scroll: {
+      paddingHorizontal: 16,
+      gap: 12,
+    },
 
-  preview: {
-    width: 82,
-    height: 82,
-    borderRadius: 8,
-    overflow: "hidden",
-    borderWidth: 2,
-    borderColor: "transparent",
-  },
+    item: {
+      width: 70,
+      alignItems:
+        "center",
+    },
 
-  selected: {
-    borderColor: "#8B5CF6",
-  },
+    preview: {
+      width: 64,
+      height: 64,
+      borderRadius: 8,
+      overflow: "hidden",
+      borderWidth: 2,
+      borderColor:
+        "transparent",
+    },
 
-  canvas: {
-    width: 78,
-    height: 78,
-  },
+    active: {
+      borderColor:
+        "#fff",
+    },
 
-  name: {
-    color: "#888",
-    fontSize: 12,
-    marginTop: 5,
-  },
+    image: {
+      width: "100%",
+      height: "100%",
+    },
 
-  activeName: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-});
+    name: {
+      color: "#888",
+      fontSize: 11,
+      marginTop: 5,
+    },
+
+    activeText: {
+      color: "#fff",
+      fontWeight: "600",
+    },
+  });

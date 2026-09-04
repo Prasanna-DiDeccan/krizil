@@ -20,8 +20,8 @@ auth: {
     deleteAvatar: (userId) => `/api/users/${userId}/avatar`,
     getUserPosts: (userId) => `/api/users/${userId}/posts`,
     getUserReels: (userId) => `/api/users/${userId}/reels`,
-    getSavedPosts: (userId) => `/api/users/${userId}/saved`,
-     getSavedReels: (userId) => `/api/users/${userId}/saved/reels`,
+    // getSavedPosts: (userId) => `/api/users/${userId}/saved`,
+    //  getSavedReels: (userId) => `/api/users/${userId}/saved/reels`,
     getUserStats: (userId) => `/api/users/${userId}/stats`,
   },
 
@@ -107,22 +107,31 @@ auth: {
       `/api/highlights/${highlightId}/stories/${itemId}`,
   },
 
-  follow: {
-    followUser: (userId) =>
-      `/api/follow/${userId}`,
+follow: {
+  followUser: (userId) =>
+    `/api/follow/${userId}`,
 
-    unfollowUser: (userId) =>
-      `/api/follow/${userId}`,
+  unfollowUser: (userId) =>
+    `/api/follow/${userId}`,
 
-    getFollowers: (userId) =>
-      `/api/users/${userId}/followers`,
+  getFollowers: (userId) =>
+    `/api/users/${userId}/followers`,
 
-    getFollowing: (userId) =>
-      `/api/users/${userId}/following`,
+  getFollowing: (userId) =>
+    `/api/users/${userId}/following`,
 
-    getSuggested: (userId) =>
-      `/api/users/${userId}/suggested`,
-  },
+  getSuggested: (userId) =>
+    `/api/users/${userId}/suggested`,
+
+  getFollowRequests:
+    `/api/follow-requests`,
+
+  acceptFollowRequest: (requestId) =>
+    `/api/follow-requests/${requestId}/accept`,
+
+  rejectFollowRequest: (requestId) =>
+    `/api/follow-requests/${requestId}/reject`,
+},
 
   reels: {
     
@@ -148,30 +157,55 @@ auth: {
   },
 
 
-  likes: {
-    create: "/api/likes",
+comments: {
+  // =========================
+  // POST COMMENTS
+  // =========================
 
-    delete: "/api/likes",
-  },
+  get: (postId) =>
+    `/api/posts/${postId}/comments`,
+
+  add: (postId) =>
+    `/api/posts/${postId}/comments`,
 
 
+  // =========================
+  // REEL COMMENTS
+  // =========================
 
-  comments: {
-    get: (postId) =>
-      `/api/posts/${postId}/comments`,
+  getReelComments: (reelId) =>
+    `/api/reels/${reelId}/comments`,
 
-    add: (postId) =>
-      `/api/posts/${postId}/comments`,
+  addReelComment: (reelId) =>
+    `/api/reels/${reelId}/comments`,
 
-    reply: (commentId) =>
-      `/api/comments/${commentId}/reply`,
 
-    like: (commentId) =>
-      `/api/comments/${commentId}/like`,
+  // =========================
+  // COMMENT REPLIES
+  // =========================
 
-    delete: (commentId) =>
-      `/api/comments/${commentId}`,
-  },
+  reply: (commentId) =>
+    `/api/comments/${commentId}/reply`,
+
+  getReplies: (commentId) =>
+    `/api/comments/${commentId}/replies`,
+
+
+  // =========================
+  // COMMENT LIKE
+  // =========================
+
+  like: (commentId) =>
+    `/api/comments/${commentId}/like`,
+
+
+  // =========================
+  // DELETE COMMENT
+  // =========================
+
+  delete: (commentId) =>
+    `/api/comments/${commentId}`,
+},
 
   
 
@@ -196,5 +230,103 @@ auth: {
   
   stats: "/api/watch/stats",
 },
+
+  likes: {
+  create: "/api/likes",
+
+  unlikeByTarget: "/api/likes",
+
+  unlikeById: (likeId) =>
+    `/api/likes/${likeId}`,
+
+  getPostLikes: (postId) =>
+    `/api/posts/${postId}/likes`,
+
+  getReelLikes: (reelId) =>
+    `/api/reels/${reelId}/likes`,
+},
+
+chat: {
+  // ======================================================
+  // CONVERSATIONS
+  // ======================================================
+
+  getConversations:
+    "/api/chat/conversations",
+
+  createConversation:
+    "/api/chat/conversations",
+
+  deleteConversation: (conversationId) =>
+    `/api/chat/conversations/${conversationId}`,
+
+  // ======================================================
+  // ONLINE STATUS
+  // ======================================================
+
+  getOnlineStatus: (userId) =>
+    `/api/chat/users/${userId}/online`,
+
+  // ======================================================
+  // MESSAGES
+  // ======================================================
+
+  getMessages: (conversationId) =>
+    `/api/chat/conversations/${conversationId}/messages`,
+
+  sendMessage: (conversationId) =>
+    `/api/chat/conversations/${conversationId}/messages`,
+
+  markRead: (conversationId) =>
+    `/api/chat/conversations/${conversationId}/read`,
+
+  // ======================================================
+  // MESSAGE MANAGEMENT
+  // ======================================================
+
+  editMessage: (messageId) =>
+    `/api/chat/messages/${messageId}`,
+
+  deleteMessage: (messageId) =>
+    `/api/chat/messages/${messageId}`,
+
+  // ======================================================
+  // MESSAGE REACTIONS
+  // ======================================================
+
+  reactToMessage: (messageId) =>
+    `/api/chat/messages/${messageId}/react`,
+
+  removeMessageReaction: (messageId) =>
+    `/api/chat/messages/${messageId}/react`,
+
+  // ======================================================
+  // CHAT SETTINGS
+  // ======================================================
+
+  updateFont:
+    "/api/chat/settings/font",
+},
+
+notifications: {
+  get: "/api/notifications",
+
+  markRead: (notificationId) =>
+    `/api/notifications/${notificationId}/read`,
+
+  delete: (notificationId) =>
+  `/api/notifications/${notificationId}`,
+
+  registerDeviceToken:
+    "/api/notifications/device-token",
+},
+
+  saved: {
+    get: "/api/saved",
+
+    save: "/api/saved",
+
+    remove: "/api/saved",
+  },
 
 };

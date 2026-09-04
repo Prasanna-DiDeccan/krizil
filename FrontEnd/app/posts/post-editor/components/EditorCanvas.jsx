@@ -1,4 +1,6 @@
-import React, { forwardRef } from "react";
+import React, {
+  forwardRef,
+} from "react";
 
 import {
   Canvas,
@@ -8,10 +10,30 @@ import {
 } from "@shopify/react-native-skia";
 
 const EditorCanvas = forwardRef(
-  ({ image, width, height, matrix }, ref) => {
-    if (!image) {
+  (
+    {
+      image,
+      width,
+      height,
+      matrix,
+      rotation = 0,
+      flipped = false,
+    },
+    ref
+  ) => {
+    if (
+      !image ||
+      !width ||
+      !height
+    ) {
       return null;
     }
+
+    const centerX =
+      width / 2;
+
+    const centerY =
+      height / 2;
 
     return (
       <Canvas
@@ -29,8 +51,38 @@ const EditorCanvas = forwardRef(
           height={height}
           fit="cover"
           sampling={CubicSampling}
+          transform={[
+            {
+              translateX:
+                centerX,
+            },
+            {
+              translateY:
+                centerY,
+            },
+            {
+              rotate:
+                (rotation *
+                  Math.PI) /
+                180,
+            },
+            {
+              scaleX:
+                flipped ? -1 : 1,
+            },
+            {
+              translateX:
+                -centerX,
+            },
+            {
+              translateY:
+                -centerY,
+            },
+          ]}
         >
-          <ColorMatrix matrix={matrix} />
+          <ColorMatrix
+            matrix={matrix}
+          />
         </SkiaImage>
       </Canvas>
     );

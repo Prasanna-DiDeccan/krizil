@@ -8,12 +8,14 @@ import {
 import ProfileHeader from "../../src/components/profile/ProfileHeader";
 import StoryHighlights from "../../src/components/profile/StoryHighlights";
 import ProfileTabs from "../../src/components/profile/ProfileTabs";
+import ScreenLayout from "../../src/components/ScreenLayout";
 
 export default function Profile() {
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={
+    <ScreenLayout keyboardAvoid={false}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={
         styles.contentContainer
       }
       showsVerticalScrollIndicator={
@@ -26,15 +28,16 @@ export default function Profile() {
 
       <ProfileTabs />
     </ScrollView>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor:
-      "#080913",
-  },
+  // container: {
+  //   flex: 1,
+  //   backgroundColor:
+  //     "#080913",
+  // },
 
   contentContainer: {
     paddingBottom: 100,

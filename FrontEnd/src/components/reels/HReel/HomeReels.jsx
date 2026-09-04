@@ -246,17 +246,17 @@ export default function HomeReels({
 
           console.log(
             "👤 REEL AUTHOR =>",
-            item?.author
+            item?.user
           );
 
           console.log(
             "👤 REEL USERNAME =>",
-            item?.author?.username
+            item?.user?.username
           );
 
           console.log(
             "🖼️ REEL AVATAR =>",
-            item?.author?.avatar_url
+            item?.user?.avatar_url
           );
 
           return (

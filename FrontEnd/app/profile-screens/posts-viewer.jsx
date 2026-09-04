@@ -19,9 +19,11 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import { SafeAreaView } from "react-native-safe-area-context";
+// import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Ionicons } from "@expo/vector-icons";
+
+import ScreenLayout from "../../src/components/ScreenLayout";
 
 import {
   useLocalSearchParams,
@@ -954,20 +956,70 @@ export default function PostsViewer() {
     combinedContent.length === 0
   ) {
     return (
-      <SafeAreaView
-        style={
-          styles.container
-        }
-      >
-        <View
-          style={
-            styles.header
-          }
-        >
+  //     <SafeAreaView
+  //       style={
+  //         styles.container
+  //       }
+  //     >
+  //       <View
+  //         style={
+  //           styles.header
+  //         }
+  //       >
+  //         <TouchableOpacity
+  //           onPress={() =>
+  //             router.back()
+  //           }
+  //         >
+  //           <Ionicons
+  //             name="arrow-back"
+  //             size={27}
+  //             color="#fff"
+  //           />
+  //         </TouchableOpacity>
+
+  //         <Text
+  //           style={
+  //             styles.title
+  //           }
+  //         >
+  //           Posts
+  //         </Text>
+  //       </View>
+
+  //       <View
+  //         style={
+  //           styles.empty
+  //         }
+  //       >
+  //         <ActivityIndicator
+  //           size="small"
+  //           color="#fff"
+  //         />
+
+  //         <Text
+  //           style={
+  //             styles.emptyText
+  //           }
+  //         >
+  //           Loading posts and reels...
+  //         </Text>
+  //       </View>
+  //     </SafeAreaView>
+  //   );
+  // }
+
+  // ======================================================
+  // MAIN
+  // ======================================================
+ <ScreenLayout
+      backgroundColor="#080913"
+      keyboardAvoid={false}
+      header={
+        <View style={styles.header}>
           <TouchableOpacity
-            onPress={() =>
-              router.back()
-            }
+            onPress={() => router.back()}
+            hitSlop={10}
           >
             <Ionicons
               name="arrow-back"
@@ -976,55 +1028,57 @@ export default function PostsViewer() {
             />
           </TouchableOpacity>
 
-          <Text
-            style={
-              styles.title
-            }
-          >
+          <Text style={styles.title}>
             Posts
           </Text>
         </View>
+      }
+    >
+      <View style={styles.empty}>
+        <ActivityIndicator
+          size="small"
+          color="#fff"
+        />
 
-        <View
-          style={
-            styles.empty
-          }
-        >
-          <ActivityIndicator
-            size="small"
-            color="#fff"
-          />
-
-          <Text
-            style={
-              styles.emptyText
-            }
-          >
-            Loading posts and reels...
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  // ======================================================
-  // MAIN
-  // ======================================================
+        <Text style={styles.emptyText}>
+          Loading posts and reels...
+        </Text>
+      </View>
+    </ScreenLayout>
+  );
+}
 
   return (
-    <SafeAreaView
-      style={
-        styles.container
-      }
-      edges={[
-        "top",
-        "left",
-        "right",
-      ]}
-    >
+     <ScreenLayout
+    backgroundColor="#080913"
+    keyboardAvoid={false}
+    header={
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          hitSlop={10}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={27}
+            color="#fff"
+          />
+        </TouchableOpacity>
+
+        <Text style={styles.title}>
+          Posts
+        </Text>
+
+        <Text style={styles.counter}>
+          {activeIndex + 1}/{combinedContent.length}
+        </Text>
+      </View>
+    }
+  >
       {/* HEADER */}
 
-      <View
+      {/* <View
         style={
           styles.header
         }
@@ -1057,7 +1111,7 @@ export default function PostsViewer() {
           {activeIndex + 1}/
           {combinedContent.length}
         </Text>
-      </View>
+      </View> */}
 
       {/* MIXED POSTS + REELS */}
 
@@ -1231,7 +1285,7 @@ export default function PostsViewer() {
           </Pressable>
         </Pressable>
       </Modal>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
 
@@ -1241,11 +1295,11 @@ export default function PostsViewer() {
 
 const styles =
   StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor:
-        "#080913",
-    },
+    // container: {
+    //   flex: 1,
+    //   backgroundColor:
+    //     "#080913",
+    // },
 
     header: {
       height: 56,
@@ -1274,7 +1328,7 @@ const styles =
     },
 
     listContent: {
-      paddingBottom: 30,
+      paddingBottom: 50,
       backgroundColor:
         "#080913",
     },

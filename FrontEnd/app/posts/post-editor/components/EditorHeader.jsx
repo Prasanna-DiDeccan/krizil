@@ -7,16 +7,22 @@ import {
   StyleSheet,
 } from "react-native";
 
-import { Ionicons } from "@expo/vector-icons";
+import {
+  Ionicons,
+} from "@expo/vector-icons";
 
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 export default function EditorHeader({
   onBack,
   onReset,
   onNext,
+  saving,
 }) {
-  const insets = useSafeAreaInsets();
+  const insets =
+    useSafeAreaInsets();
 
   return (
     <View
@@ -24,153 +30,184 @@ export default function EditorHeader({
         styles.header,
         {
           paddingTop: insets.top,
-          height: insets.top + 56,
         },
       ]}
     >
-      {/* LEFT */}
+      {/* ==========================================
+          ACTUAL HEADER ROW
+      =========================================== */}
 
-      <TouchableOpacity
-        style={styles.sideButton}
-        onPress={onBack}
-        activeOpacity={0.7}
+      <View
+        style={styles.headerRow}
       >
-        <Ionicons
-          name="chevron-back"
-          size={28}
-          color="#fff"
-        />
-      </TouchableOpacity>
-
-      {/* CENTER */}
-
-      <View style={styles.center}>
-        <Text style={styles.title}>
-          Edit
-        </Text>
-      </View>
-
-      {/* RIGHT */}
-
-      <View style={styles.right}>
-        <TouchableOpacity
-          style={styles.resetButton}
-          onPress={onReset}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.reset}>
-            Reset
-          </Text>
-        </TouchableOpacity>
+        {/* BACK */}
 
         <TouchableOpacity
-          style={styles.nextButton}
-          onPress={onNext}
+          style={styles.sideButton}
+          onPress={onBack}
+          disabled={saving}
           activeOpacity={0.7}
         >
-          <Text style={styles.next}>
-            Next
-          </Text>
+          <Ionicons
+            name="chevron-back"
+            size={28}
+            color="#fff"
+          />
         </TouchableOpacity>
+
+        {/* CENTER TITLE */}
+
+        <View
+          style={styles.center}
+          pointerEvents="none"
+        >
+          <Text
+            style={styles.title}
+          >
+            Edit
+          </Text>
+        </View>
+
+        {/* RIGHT */}
+
+        <View
+          style={styles.right}
+        >
+          <TouchableOpacity
+            style={styles.resetButton}
+            onPress={onReset}
+            disabled={saving}
+            activeOpacity={0.7}
+          >
+            <Text
+              style={styles.reset}
+            >
+              Reset
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.nextButton}
+            onPress={onNext}
+            disabled={saving}
+            activeOpacity={0.7}
+          >
+            <Text
+              style={styles.next}
+            >
+              {saving
+                ? "..."
+                : "Next"}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  header: {
-    width: "100%",
+const styles =
+  StyleSheet.create({
+    // ==========================================
+    // SAFE AREA CONTAINER
+    // ==========================================
 
-    paddingHorizontal: 12,
+    header: {
+      width: "100%",
+      backgroundColor: "#000",
+      borderBottomWidth: 0.5,
+      borderBottomColor: "#222",
+    },
 
-    flexDirection: "row",
-    alignItems: "center",
+    // ==========================================
+    // FIXED 56px HEADER
+    // ==========================================
 
-    backgroundColor: "#000",
+    headerRow: {
+      width: "100%",
+      height: 56,
 
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#222",
-  },
+      paddingHorizontal: 12,
 
-  /*
-   * LEFT
-   */
+      flexDirection: "row",
+      alignItems: "center",
 
-  sideButton: {
-    width: 70,
-    height: 56,
+      position: "relative",
+    },
 
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
+    // ==========================================
+    // BACK BUTTON
+    // ==========================================
 
-  /*
-   * CENTER
-   *
-   * Absolute positioning keeps "Edit"
-   * exactly in the center of the screen,
-   * regardless of Reset / Next width.
-   */
+    sideButton: {
+      width: 50,
+      height: 56,
 
-  center: {
-    position: "absolute",
+      justifyContent: "center",
+      alignItems: "flex-start",
+    },
 
-    left: 0,
-    right: 0,
+    // ==========================================
+    // CENTER
+    // ==========================================
 
-    height: 56,
+    center: {
+      position: "absolute",
 
-    justifyContent: "center",
-    alignItems: "center",
+      left: 0,
+      right: 0,
 
-    pointerEvents: "none",
-  },
+      top: 0,
+      bottom: 0,
 
-  title: {
-    color: "#fff",
+      justifyContent: "center",
+      alignItems: "center",
+    },
 
-    fontSize: 18,
-    fontWeight: "600",
-  },
+    title: {
+      color: "#fff",
+      fontSize: 18,
+      fontWeight: "600",
+    },
 
-  /*
-   * RIGHT
-   */
+    // ==========================================
+    // RIGHT BUTTONS
+    // ==========================================
 
-  right: {
-    marginLeft: "auto",
+    right: {
+      marginLeft: "auto",
 
-    height: 56,
+      height: 56,
 
-    flexDirection: "row",
-    alignItems: "center",
+      flexDirection: "row",
+      alignItems: "center",
 
-    gap: 18,
-  },
+      gap: 18,
+    },
 
-  resetButton: {
-    height: 56,
+    resetButton: {
+      height: 56,
 
-    justifyContent: "center",
-  },
+      justifyContent: "center",
+      alignItems: "center",
+    },
 
-  nextButton: {
-    height: 56,
+    nextButton: {
+      height: 56,
 
-    justifyContent: "center",
-  },
+      justifyContent: "center",
+      alignItems: "center",
+    },
 
-  reset: {
-    color: "#999",
+    reset: {
+      color: "#999",
+      fontSize: 14,
+      fontWeight: "500",
+    },
 
-    fontSize: 14,
-    fontWeight: "500",
-  },
-
-  next: {
-    color: "#0095F6",
-
-    fontSize: 16,
-    fontWeight: "600",
-  },
-});
+    next: {
+      color: "#0095F6",
+      fontSize: 16,
+      fontWeight: "600",
+    },
+  });

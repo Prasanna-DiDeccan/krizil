@@ -10,7 +10,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useDispatch } from "react-redux";
-import Toast from "react-native-toast-message";
+// import Toast from "react-native-toast-message";
+import Toast from "react-native-root-toast";
 
 import { Colors } from "../../src/theme/colors";
 import { setSignupData, registerUser } from "../../src/redux/authSlice";
@@ -171,7 +172,7 @@ const handleContinue = async () => {
         >
           <LinearGradient
             colors={
-              Colors.gradients.primary
+              Colors.gradients.secondary
             }
             style={styles.button}
           >

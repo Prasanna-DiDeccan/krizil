@@ -12,6 +12,9 @@ import storyReducer from "./storySlice";
 import reelsReducer from "./reelsSlice";
 import commentsReducer from "./commentsSlice";
 import watchReducer from "./watchSlice";
+import likeReducer from "./likeSlice";
+import chatReducer from "./chatSlice";
+import notificationReducer from "./notificationSlice";
 
 console.log(authReducer);
 export const store = configureStore({
@@ -28,5 +31,8 @@ export const store = configureStore({
     reels: reelsReducer,
     comments: commentsReducer,
     watch: watchReducer,
+    like: likeReducer,
+    chat: chatReducer,
+    notification: notificationReducer,
   },
 });
